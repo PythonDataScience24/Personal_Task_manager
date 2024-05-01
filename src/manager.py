@@ -105,6 +105,9 @@ class Manager:
         if attribute == 'Points':
             sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
             return sortedbyPoints_df
+        
+    def addCategory(newCategory):
+        pass #to do: implement Category list
 
     def filter_by_status(self, status):
         pass

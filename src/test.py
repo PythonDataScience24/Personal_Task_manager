@@ -15,7 +15,7 @@ def random_date():
 def testset():
 # possible values
     categories = ["Work", "Home", "Study", "Personal", "Health"]
-    priorities = [0,1,2,3]
+    priorities = [0,1,2,3,4,5]
     statuses = ["To Do", "In Progress", "Completed"]
     titles = ["A","B","a","b","c","C"]
 
@@ -36,12 +36,12 @@ def testset():
 
 manager = Manager()
 manager.create_tasklist()
-#testset()
+testset()
 
 #orderby tests
 #print(manager.order_by('Title'))
-print(manager.order_by('Category'))
-print(manager.order_by('Priority', False))
+#print(manager.order_by('Category'))
+#print(manager.order_by('Priority', False))
 #print(manager.order_by('Status', False))
 #print(manager.order_by('i'))
 

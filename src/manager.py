@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import tasklistguardian
 
 
 
@@ -42,14 +43,14 @@ class Manager:
                 self.tasklist.at[i, "Description"] = description
             if deadline:
                 #needs restriction, cant be in the past
-                self.tasklist.at[i, "Deadline"] = deadline
+                self.tasklist.at[i, "Deadline"] = tasklistguardian.guardDeadline(deadline)
             if category:
                 #needs no restriction
                 # categories will get saved in a list ["Work", "Personal", "Health", "Other"] for example
                 self.tasklist.at[i, "Category"] = category
             if priority:
                 #either 0, 1, 2, 3
-                self.tasklist.at[i, "Priority"] = priority
+                self.tasklist.at[i, "Priority"] = tasklistguardian.guardPriority(priority)
             if status:
                 #either "To Do", "In Progress", "Completed"
                 self.tasklist.at[i, "Status"] = status
@@ -107,7 +108,7 @@ class Manager:
             return sortedbyPoints_df
         
     def addCategory(newCategory):
-        pass #to do: implement Category list
+        pass #to do: implement Category list (not sure if in this class)
 
     def filter_by_status(self, status):
         pass

@@ -77,6 +77,35 @@ class Manager:
         else:
             print("Index out of range.")
 
+    def order_by(self, attribute): #attribute = columns
+        if attribute == 'Title':
+            sortedbyTitle_df = self.tasklist.sort_values(by='Title')
+            return sortedbyTitle_df
+        
+        if attribute == 'Deadline':
+            #first need to define datatype of Deadline
+            return 0
+        
+        if attribute == 'Category':
+            sortedbyCategory_df = self.tasklist.sort_values(by='Category')
+            return sortedbyCategory_df
+
+        if attribute == 'Priority':
+            sortedbyPriority_df = self.tasklist.sort_values(by='Priority',ascending=False) #highest first
+            return sortedbyPriority_df
+        
+        if attribute == 'Status':
+            sortedbyStatus_df = self.tasklist.sort_values(by='status', ascending=False) #Completed last 
+            return sortedbyStatus_df
+
+        if attribute == 'Duration Planned':
+            #first datatype needs to be defined
+            return 0
+        if attribute == 'i':
+            sortedbyIndex_df = self.tasklist.sort_index()
+            return sortedbyIndex_df
+        #currently only attributes which are predefined have an order_by function (missing Points, Duration)
+
     def order_by_priority(self, priority):
         pass
 

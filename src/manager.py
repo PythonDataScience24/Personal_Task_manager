@@ -106,18 +106,6 @@ class Manager:
             sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
             return sortedbyPoints_df
 
-    def order_by_priority(self, priority):
-        pass
-
-    def order_by_deadline(self, deadline):
-        pass
-
-    def order_by_duration(self, duration):
-        pass
-
-    def order_by_points(self, points):
-        pass
-
     def filter_by_status(self, status):
         pass
 

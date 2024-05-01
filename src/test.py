@@ -17,10 +17,11 @@ def testset():
     categories = ["Work", "Home", "Study", "Personal", "Health"]
     priorities = [0,1,2,3]
     statuses = ["To Do", "In Progress", "Completed"]
+    titles = ["A","B","a","b","c","C"]
 
     # 50 Random Inputs
     for i in range(50):
-        task_name = f"Task{i+1}"
+        task_name = random.choice(titles)
         description = f"Description{i+1}"
         due_date = random_date()
         category = random.choice(categories)
@@ -36,13 +37,18 @@ def testset():
 manager = Manager()
 manager.create_tasklist()
 testset()
+print(manager.order_by('Title'))
+print(manager.order_by('Category'))
+print(manager.order_by('Priority'))
+print(manager.order_by('Status'))
+
 
 
 
 #manager.add_task("Task1", "Description1", "2021-12-31", "Work", "High", "To Do", True, 2, 2, 10)
 #manager.delete_task(0)
 #manager.edit_task(1, title="Task2", description="HELLO,WORLD")
-manager.print_tasklist()
+#manager.print_tasklist()
 
 
 

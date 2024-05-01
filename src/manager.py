@@ -7,9 +7,6 @@ import os
 class Manager:
     def __init__(self):
         self.file_path = "tasklist.csv"
-        
-
-
 
     def create_tasklist(self):
         
@@ -95,7 +92,7 @@ class Manager:
             return sortedbyPriority_df
         
         if attribute == 'Status':
-            sortedbyStatus_df = self.tasklist.sort_values(by='status', ascending=False) #Completed last 
+            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=False) #Completed last 
             return sortedbyStatus_df
 
         if attribute == 'Duration Planned':

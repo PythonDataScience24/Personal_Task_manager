@@ -74,9 +74,9 @@ class Manager:
         else:
             print("Index out of range.")
 
-    def order_by(self, attribute): #attribute = columns
+    def order_by(self, attribute, asc = True): #attribute = columns, asc = True ascending False = descending
         if attribute == 'Title':
-            sortedbyTitle_df = self.tasklist.sort_values(by='Title')
+            sortedbyTitle_df = self.tasklist.sort_values(by='Title', ascending=asc, key=lambda x: x.str.lower()) #currently A = a maybe change?
             return sortedbyTitle_df
         
         if attribute == 'Deadline':
@@ -84,24 +84,27 @@ class Manager:
             return 0
         
         if attribute == 'Category':
-            sortedbyCategory_df = self.tasklist.sort_values(by='Category')
+            sortedbyCategory_df = self.tasklist.sort_values(by='Category', ascending=asc, key=lambda x: x.str.lower())
             return sortedbyCategory_df
 
         if attribute == 'Priority':
-            sortedbyPriority_df = self.tasklist.sort_values(by='Priority',ascending=False) #highest first
+            sortedbyPriority_df = self.tasklist.sort_values(by='Priority', ascending=asc) 
             return sortedbyPriority_df
         
         if attribute == 'Status':
-            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=False) #Completed last 
+            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=asc) #Completed last 
             return sortedbyStatus_df
 
         if attribute == 'Duration Planned':
             #first datatype needs to be defined
             return 0
         if attribute == 'i':
-            sortedbyIndex_df = self.tasklist.sort_index()
+            sortedbyIndex_df = self.tasklist.sort_index(ascending=asc)
             return sortedbyIndex_df
-        #currently only attributes which are predefined have an order_by function (missing Points, Duration)
+        #currently only attributes which are predefined have an order_by function (missing Duration)
+        if attribute == 'Points':
+            sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
+            return sortedbyPoints_df
 
     def order_by_priority(self, priority):
         pass

@@ -36,11 +36,14 @@ def testset():
 
 manager = Manager()
 manager.create_tasklist()
-testset()
-print(manager.order_by('Title'))
+#testset()
+
+#orderby tests
+#print(manager.order_by('Title'))
 print(manager.order_by('Category'))
-print(manager.order_by('Priority'))
-print(manager.order_by('Status'))
+print(manager.order_by('Priority', False))
+#print(manager.order_by('Status', False))
+#print(manager.order_by('i'))
 
 
 

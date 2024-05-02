@@ -37,7 +37,7 @@ def testset():
 #create
 manager = Manager()
 manager.create_tasklist()
-testset()
+#testset()
 
 #orderby tests (can also be used to test ValidateTask class)
 # print(manager.order_by('Title'))
@@ -55,7 +55,9 @@ print(manager.order_by('Status', False))
 #manager.print_tasklist()
 
 #test filter()
-
+print(manager.filter(Title = 'a'))
+print(manager.filter(Title = 'b'))
+print(manager.filter(Status = 0))
 
 
 #Reserve code

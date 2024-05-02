@@ -124,7 +124,7 @@ class Manager:
     def filter(self, **kwargs):
         filtered_tasklist = self.tasklist.copy()
         for attribute, value in kwargs.items():
-            if attribute in self.columns:
+            if attribute in self.tasklist.columns:
                 filtered_tasklist = filtered_tasklist[filtered_tasklist[attribute] == value]
             else:
                 print(f"Invalid attribute: {attribute}")

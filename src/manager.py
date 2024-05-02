@@ -1,6 +1,8 @@
 import pandas as pd
 import os
 from  taskValidator import taskValidator
+from datetime import datetime
+import json
 
 
 
@@ -29,6 +31,8 @@ class Manager:
     def delete_task(self, i: int):
         if i < len(self.tasklist) and i >= 0:
             self.tasklist.drop(i, inplace=True)
+            #self.order_by('i') #to make sure the original index is not changed (index shows recency)
+            #maybe a way to restore the order before delet was called
             self.tasklist.reset_index(drop=True, inplace=True)
             self.tasklist.to_csv(self.file_path, index=False)
         else:
@@ -68,13 +72,69 @@ class Manager:
 
     def print_tasklist(self):
         print(self.tasklist)
+    #not tested!!
+    def set_inprogress(self, i):
+        if i < len(self.tasklist) and i >= 0:
+            
+            #saving current time in json
+            now = datetime.now()
+            formatted_time = now.strftime("%Y-%m-%d %H:%M")
+            filename = 'timestamps.json'
+            #check if json file exists and open it
+            if os.path.exists(filename):
+                with open(filename, 'r') as file:
+                    try:
+                        data = json.load(file)
+                    except json.JSONDecodeError:
+                        data = []
+            else:
+                data =[]    
+                    
+            #store the timestamp with id of the task
+            data.append({
+                "id"   : i,
+                "time" : formatted_time
+            })
 
+            with open(filename, 'w') as file:
+                json.dump(data, file, indent=4)
+
+            #change status in pd.Dataframe
+            self.edit_task(i, status="In Progress")
+            
+            return 0
+    #not tested!!
     def complete_task(self, i: int):
         if i < len(self.tasklist) and i >= 0:
+            now = datetime.now()
+            formatted_time = now.strftime("%Y-%m-%d %H:%M")
+            
+            #checks if file got created
+            if not os.path.exists('timestamps.json'):
+                print(f"No timestamps")
+                return None
+            
+            #filters for correct timestamp
+            with open('timestamps.json', 'r') as file:
+                data = json.load(file)
+                timestamp_str = next((entry['time'] for entry in data if entry['id'] == i), None)
+            
+            #extract priority for points calculation
+            priority = self.tasklist[self.tasklist['id'] == i]['Priority'].iloc[0]
+            #convert timestamp to a datetimeobject so we can substract it from now
+            timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M")
+            #creates a timedelta object which can be converted into seconds
+            duration = formatted_time - timestamp
+            #calc points (per min in this example)
+            points = (duration.total_seconds //60) * priority
+
+            #edit
+            self.edit_task(i, duration= duration.total_seconds())
             self.edit_task(i, status="Completed")
-            #needs to place completed time
-            #needs to stop timer Duration
+            self.edit_task(i, Completion_time= datetime.now().strftime("%d.%m.%Y"))
+            self.edit_task(i, points= points)
             #add points (duration*Priority)
+        
         else:
             print("Index out of range.")
 

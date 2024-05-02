@@ -16,7 +16,7 @@ def testset():
 # possible values
     categories = ["Work", "Home", "Study", "Personal", "Health"]
     priorities = [0,1,2,3,4,5]
-    statuses = ["To Do", "In Progress", "Completed"]
+    statuses = ["To Do", "Ongoing", "Completed"]
     titles = ["A","B","a","b","c","C"]
 
     # 50 Random Inputs

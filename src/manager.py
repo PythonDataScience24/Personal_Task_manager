@@ -78,9 +78,11 @@ class Manager:
         else:
             print("Index out of range.")
 
-    def order_by(self, attribute, asc = True): #attribute = columns, asc = True ascending False = descending
+
+
+    def order_by(self, attribute, asc=True):
         if attribute == 'Title':
-            sortedbyTitle_df = self.tasklist.sort_values(by='Title', ascending=asc, key=lambda x: x.str.lower()) #currently A = a maybe change?
+            sortedbyTitle_df = self.tasklist.sort_values(by='Title', ascending=asc, key=lambda x: x.str.lower() + x)
             return sortedbyTitle_df
         
         if attribute == 'Deadline':

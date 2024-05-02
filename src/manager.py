@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import tasklistguardian
+import taskValidator
 
 
 
@@ -21,7 +21,7 @@ class Manager:
             self.tasklist.to_csv(self.file_path, index=False)
             print("File not found. Created a new empty dataframe.")
 
-    def add_task(self, title, description, deadline=None, category=None, priority=0, status="To Do", completion_time=True, duration_planned=None, duration=None, points=None):
+    def add_task(self, title, description="", deadline=None, category=None, priority=0, status="To Do", completion_time=True, duration_planned=None, duration=None, points=None):
         self.tasklist.loc[len(self.tasklist)] = [title, description, deadline, category, priority, status, completion_time, duration_planned, duration, points]
         self.tasklist.to_csv(self.file_path, index=False)
 
@@ -43,14 +43,14 @@ class Manager:
                 self.tasklist.at[i, "Description"] = description
             if deadline:
                 #needs restriction, cant be in the past
-                self.tasklist.at[i, "Deadline"] = tasklistguardian.guardDeadline(deadline)
+                self.tasklist.at[i, "Deadline"] = taskValidator.guardDeadline(deadline)
             if category:
                 #needs no restriction
                 # categories will get saved in a list ["Work", "Personal", "Health", "Other"] for example
                 self.tasklist.at[i, "Category"] = category
             if priority:
                 #either 0, 1, 2, 3
-                self.tasklist.at[i, "Priority"] = tasklistguardian.guardPriority(priority)
+                self.tasklist.at[i, "Priority"] = taskValidator.guardPriority(priority)
             if status:
                 #either "To Do", "In Progress", "Completed"
                 self.tasklist.at[i, "Status"] = status
@@ -110,9 +110,12 @@ class Manager:
     def addCategory(newCategory):
         pass #to do: implement Category list (not sure if in this class)
 
-    def filter_by_status(self, status):
-        pass
-
-    def filter_by_category(self, category):
-        pass
+    def filter(self, **kwargs):
+        filtered_tasklist = self.tasklist.copy()
+        for attribute, value in kwargs.items():
+            if attribute in self.columns:
+                filtered_tasklist = filtered_tasklist[filtered_tasklist[attribute] == value]
+            else:
+                print(f"Invalid attribute: {attribute}")
+        return filtered_tasklist
 

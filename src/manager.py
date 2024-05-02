@@ -46,7 +46,6 @@ class Manager:
                 #needs restriction, cant be in the past
                 self.tasklist.at[i, "Deadline"] = taskValidator.validateDeadline(deadline)
             if category:
-                #needs no restriction
                 # categories will get saved in a list ["Work", "Personal", "Health", "Other"] for example
                 self.tasklist.at[i, "Category"] = category
             if priority:
@@ -73,6 +72,9 @@ class Manager:
     def complete_task(self, i: int):
         if i < len(self.tasklist) and i >= 0:
             self.edit_task(i, status="Completed")
+            #needs to place completed time
+            #needs to stop timer Duration
+            #add points (duration*Priority)
         else:
             print("Index out of range.")
 

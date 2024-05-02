@@ -8,6 +8,7 @@ from  taskValidator import taskValidator
 class Manager:
     def __init__(self):
         self.file_path = "tasklist.csv"
+        self.create_tasklist()
 
     def create_tasklist(self):
         
@@ -107,8 +108,14 @@ class Manager:
             sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
             return sortedbyPoints_df
         
-    def addCategory(newCategory):
-        pass #to do: implement Category list (not sure if in this class)
+    def addCategory(self, newCategory):
+        categories = self.tasklist["Category"].unique()
+        if newCategory not in categories:
+            self.taskList["Category"].append(newCategory)
+            print(f"Category '{newCategory}' added successfully.")
+        else:
+            print(f"Category '{newCategory}' already exists.")
+            
 
     def filter(self, **kwargs):
         filtered_tasklist = self.tasklist.copy()

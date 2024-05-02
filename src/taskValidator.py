@@ -36,17 +36,23 @@ class taskValidator:
         
         return deadline
 
-    @staticmethod
-    def validatePriority(x):
-        #priority has to be either 0,1,2,3
-        if x < 0:
-            return 0
-        if x > 3:
-            return 3
-        else:
-            return x
+        @staticmethod
+        def validatePriority(x):
+            #priority has to be either 0,1,2,3
+            if x < 0:
+                return 0
+            if x > 3:
+                return 3
+            else:
+                return x
     
-
-   
-    
+        @staticmethod
+        def validateStatus(x):
+            #status has to be either "To Do", "In Progress", "Completed"
+            valid_statuses = ["To Do", "In Progress", "Completed"]
+            if x in valid_statuses:
+                return x
+            else:
+                print("Status is not valid.")
+                return None
    

@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import taskValidator
+from  taskValidator import taskValidator
 
 
 
@@ -22,7 +22,7 @@ class Manager:
             print("File not found. Created a new empty dataframe.")
 
     def add_task(self, title, description="", deadline=None, category=None, priority=0, status="To Do", completion_time=True, duration_planned=None, duration=None, points=None):
-        self.tasklist.loc[len(self.tasklist)] = [title, description, deadline, category, priority, status, completion_time, duration_planned, duration, points]
+        self.tasklist.loc[len(self.tasklist)] = [title, description, taskValidator.validateDeadline(deadline), category, taskValidator.validatePriority(priority), status, completion_time, duration_planned, duration, points]
         self.tasklist.to_csv(self.file_path, index=False)
 
     def delete_task(self, i: int):
@@ -43,14 +43,14 @@ class Manager:
                 self.tasklist.at[i, "Description"] = description
             if deadline:
                 #needs restriction, cant be in the past
-                self.tasklist.at[i, "Deadline"] = taskValidator.guardDeadline(deadline)
+                self.tasklist.at[i, "Deadline"] = taskValidator.validateDeadline(deadline)
             if category:
                 #needs no restriction
                 # categories will get saved in a list ["Work", "Personal", "Health", "Other"] for example
                 self.tasklist.at[i, "Category"] = category
             if priority:
                 #either 0, 1, 2, 3
-                self.tasklist.at[i, "Priority"] = taskValidator.guardPriority(priority)
+                self.tasklist.at[i, "Priority"] = taskValidator.validatePriority(priority)
             if status:
                 #either "To Do", "In Progress", "Completed"
                 self.tasklist.at[i, "Status"] = status

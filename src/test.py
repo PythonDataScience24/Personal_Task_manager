@@ -5,7 +5,7 @@ import pandas as pd
 
 def random_date():
     #generate date in next 2 years
-    start_date = datetime.now()
+    start_date = datetime.now() - timedelta(days=365 * 2)
     end_date = start_date + timedelta(days=365 * 2)
     time_between_dates = end_date - start_date
     random_number_of_days = random.randrange(time_between_dates.days)
@@ -41,7 +41,7 @@ testset()
 #orderby tests
 #print(manager.order_by('Title'))
 #print(manager.order_by('Category'))
-#print(manager.order_by('Priority', False))
+print(manager.order_by('Priority', False))
 #print(manager.order_by('Status', False))
 #print(manager.order_by('i'))
 

@@ -23,7 +23,7 @@ class Manager:
             print("File not found. Created a new empty dataframe.")
 
     def add_task(self, title, description="", deadline=None, category=None, priority=0, status="To Do", completion_time=True, duration_planned=None, duration=None, points=None):
-        self.tasklist.loc[len(self.tasklist)] = [title, description, taskValidator.validateDeadline(deadline), category, taskValidator.validatePriority(priority), status, completion_time, duration_planned, duration, points]
+        self.tasklist.loc[len(self.tasklist)] = [title, description, taskValidator.validateDeadline(deadline), category, taskValidator.validatePriority(priority), taskValidator.validateStatus(status), completion_time, duration_planned, duration, points]
         self.tasklist.to_csv(self.file_path, index=False)
 
     def delete_task(self, i: int):
@@ -53,7 +53,7 @@ class Manager:
                 self.tasklist.at[i, "Priority"] = taskValidator.validatePriority(priority)
             if status:
                 #either "To Do", "In Progress", "Completed"
-                self.tasklist.at[i, "Status"] = status
+                self.tasklist.at[i, "Status"] = taskValidator.validateStatus(status)
             if completion_time:
                 self.tasklist.at[i, "Completion Time"] = completion_time
             if duration_planned:
@@ -124,7 +124,7 @@ class Manager:
     def filter(self, **kwargs):
         filtered_tasklist = self.tasklist.copy()
         for attribute, value in kwargs.items():
-            if attribute in self.columns:
+            if attribute in self.tasklist.columns:
                 filtered_tasklist = filtered_tasklist[filtered_tasklist[attribute] == value]
             else:
                 print(f"Invalid attribute: {attribute}")

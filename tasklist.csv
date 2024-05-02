@@ -1,4 +1,5 @@
 Title,Description,Deadline,Category,Priority,Status,Completion Time,Duration Planned,Duration,Points
+<<<<<<< HEAD
 b,Description1,,Home,3,Completed,False,3,4,19
 b,Description2,,Health,3,To Do,True,5,1,14
 b,Description3,,Work,3,In Progress,True,2,5,10
@@ -199,3 +200,55 @@ C,Description47,,Home,0,In Progress,True,2,4,11
 b,Description48,,Health,2,To Do,True,3,4,16
 c,Description49,,Home,0,In Progress,False,4,1,20
 a,Description50,,Home,0,To Do,False,5,4,16
+=======
+c,Description1,,Home,3,In Progress,True,3,3,1
+c,Description2,,Personal,2,Completed,True,1,1,4
+b,Description3,,Work,1,Completed,False,4,3,1
+a,Description4,,Study,1,To Do,True,2,4,2
+C,Description5,,Home,3,Completed,True,5,3,8
+A,Description6,,Health,2,To Do,False,1,2,14
+b,Description7,,Study,1,,True,3,3,5
+a,Description8,,Study,3,In Progress,False,5,3,3
+c,Description9,,Study,3,To Do,False,4,4,15
+A,Description10,,Personal,3,To Do,True,3,3,11
+C,Description11,,Home,3,In Progress,False,5,5,4
+A,Description12,,Study,3,In Progress,True,5,1,12
+b,Description13,,Personal,3,Completed,True,2,3,11
+c,Description14,,Home,2,In Progress,True,5,5,15
+A,Description15,,Work,3,In Progress,False,2,1,16
+C,Description16,,Health,3,In Progress,True,1,2,14
+B,Description17,,Home,3,To Do,True,3,5,9
+C,Description18,,Work,2,To Do,False,5,2,8
+c,Description19,,Work,0,Completed,True,3,1,19
+a,Description20,,Work,2,Completed,True,5,1,7
+C,Description21,,Health,3,,True,4,4,9
+C,Description22,,Home,3,In Progress,False,3,2,14
+b,Description23,,Work,3,To Do,True,1,4,6
+B,Description24,,Home,0,To Do,True,3,3,15
+C,Description25,,Personal,1,To Do,False,1,5,3
+b,Description26,,Home,2,In Progress,False,5,2,10
+b,Description27,,Health,0,,False,2,2,16
+c,Description28,,Study,0,In Progress,True,2,1,14
+A,Description29,,Work,2,,True,5,2,15
+C,Description30,,Personal,3,In Progress,True,3,5,5
+b,Description31,,Health,3,To Do,False,2,2,8
+a,Description32,,Home,3,,True,5,2,3
+c,Description33,,Health,3,Completed,True,5,1,16
+A,Description34,,Personal,3,Completed,False,4,1,13
+b,Description35,,Work,1,Completed,False,3,4,10
+A,Description36,,Home,1,Completed,True,5,5,15
+A,Description37,,Work,3,In Progress,False,5,5,18
+B,Description38,,Study,3,,True,2,1,10
+a,Description39,,Home,1,Completed,True,1,1,8
+c,Description40,,Health,3,In Progress,False,4,3,11
+C,Description41,,Study,2,Completed,True,4,1,2
+c,Description42,,Study,3,In Progress,False,2,5,5
+b,Description43,,Personal,3,,True,5,1,14
+a,Description44,,Study,1,In Progress,False,4,2,7
+B,Description45,,Work,3,To Do,True,5,2,10
+b,Description46,,Personal,0,Completed,True,2,2,18
+a,Description47,,Study,1,Completed,False,3,1,19
+A,Description48,,Health,0,,True,2,3,6
+B,Description49,,Home,3,In Progress,True,4,3,15
+C,Description50,,Personal,3,,False,3,2,1
+>>>>>>> fb3f88d2a262eb26ff2e7e3d4ebab86c42d3c8cc

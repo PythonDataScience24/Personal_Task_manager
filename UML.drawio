@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="0DxNVRoube6PMnfSvanv" name="Page-1">
-        <mxGraphModel dx="622" dy="812" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
+        <mxGraphModel dx="533" dy="696" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -52,16 +52,16 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="21" value="Class: Profile" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;labelBackgroundColor=none;fontFamily=Helvetica;" vertex="1" parent="1">
-                    <mxGeometry x="100" y="440" width="160" height="144" as="geometry"/>
+                    <mxGeometry x="100" y="440" width="180" height="200" as="geometry"/>
                 </mxCell>
                 <mxCell id="22" value="+ name : str&#10;+ total_points : int&#10;+ total_tasks : int&#10;+ missed_deadlines : int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;labelBackgroundColor=none;fontFamily=Helvetica;" vertex="1" parent="21">
-                    <mxGeometry y="26" width="160" height="84" as="geometry"/>
+                    <mxGeometry y="26" width="180" height="84" as="geometry"/>
                 </mxCell>
                 <mxCell id="23" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;labelBackgroundColor=none;fontFamily=Helvetica;" vertex="1" parent="21">
-                    <mxGeometry y="110" width="160" height="8" as="geometry"/>
+                    <mxGeometry y="110" width="180" height="8" as="geometry"/>
                 </mxCell>
-                <mxCell id="24" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;labelBackgroundColor=none;fontFamily=Helvetica;" vertex="1" parent="21">
-                    <mxGeometry y="118" width="160" height="26" as="geometry"/>
+                <mxCell id="24" value="+ calculate_completed_tasks()&#10;+ calculate_todo_tasks()&#10;+ calculate_ongoing_tasks()&#10;+ calculate_missed_deadlines()&#10;+__str__()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;labelBackgroundColor=none;fontFamily=Helvetica;" vertex="1" parent="21">
+                    <mxGeometry y="118" width="180" height="82" as="geometry"/>
                 </mxCell>
                 <mxCell id="26" value="Use" style="endArrow=open;endSize=12;dashed=1;html=1;fontFamily=Helvetica;entryX=0.08;entryY=1.031;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryPerimeter=0;" edge="1" parent="1" source="21" target="9">
                     <mxGeometry width="160" relative="1" as="geometry">

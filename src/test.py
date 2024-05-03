@@ -13,14 +13,10 @@ def random_date():
     return random_date.strftime("%d.%m.%Y")
 
 def testset():
-# possible values
+    # possible values
     categories = ["Work", "Home", "Study", "Personal", "Health"]
     priorities = [0,1,2,3,4,5]
-<<<<<<< HEAD
-    statuses = ["To Do", "Ongoing", "Completed"]
-=======
-    statuses = ["To Do", "In Progress", "Completed", "Not a status"]
->>>>>>> fb3f88d2a262eb26ff2e7e3d4ebab86c42d3c8cc
+    statuses = ["To Do", "In Progress", "Completed"]
     titles = ["A","B","a","b","c","C"]
 
     # 50 Random Inputs
@@ -41,13 +37,13 @@ def testset():
 #create
 manager = Manager()
 manager.create_tasklist()
-#testset()
+# testset()
 
 #orderby tests (can also be used to test ValidateTask class)
 # print(manager.order_by('Title'))
 #print(manager.order_by('Category'))
 # print(manager.order_by('Priority', False))
-print(manager.order_by('Status', False))
+# print(manager.order_by('Status', False))
 #print(manager.order_by('i'))
 
 
@@ -59,9 +55,9 @@ print(manager.order_by('Status', False))
 #manager.print_tasklist()
 
 #test filter()
-print(manager.filter(Title = 'a'))
-print(manager.filter(Title = 'b'))
-print(manager.filter(Status = 0))
+# print(manager.filter(Title = 'a'))
+# print(manager.filter(Title = 'b'))
+# print(manager.filter(Status = 0))
 
 
 #Reserve code

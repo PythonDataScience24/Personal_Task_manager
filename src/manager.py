@@ -27,6 +27,9 @@ class Manager:
     def add_task(self, title, description="", deadline=None, category=None, priority=0, status="To Do", completion_time=True, duration_planned=None, duration=None, points=None):
         self.tasklist.loc[len(self.tasklist)] = [title, description, taskValidator.validateDeadline(deadline), category, taskValidator.validatePriority(priority), taskValidator.validateStatus(status), completion_time, duration_planned, duration, points]
         self.tasklist.to_csv(self.file_path, index=False)
+        #check it status in 'In Progress' and call the set_inprogress function
+        if status == 'In Progress':
+            self.set_inprogress(len(self.tasklist)-1)
 
     def delete_task(self, i: int):
         if i < len(self.tasklist) and i >= 0:
@@ -58,6 +61,11 @@ class Manager:
             if status:
                 #either "To Do", "In Progress", "Completed"
                 self.tasklist.at[i, "Status"] = taskValidator.validateStatus(status)
+                #if status is 'In Progress' call set_inprogress, if status is 'Completed' call complete_task
+                if status == 'In Progress':
+                    self.set_inprogress(i)
+                if status == 'Completed':
+                    self.complete_task(i)
             if completion_time:
                 self.tasklist.at[i, "Completion Time"] = completion_time
             if duration_planned:
@@ -75,7 +83,6 @@ class Manager:
     #not tested!!
     def set_inprogress(self, i):
         if i < len(self.tasklist) and i >= 0:
-            
             #saving current time in json
             now = datetime.now()
             formatted_time = now.strftime("%Y-%m-%d %H:%M")
@@ -99,9 +106,6 @@ class Manager:
             with open(filename, 'w') as file:
                 json.dump(data, file, indent=4)
 
-            #change status in pd.Dataframe
-            self.edit_task(i, status="In Progress")
-            
             return 0
     #not tested!!
     def complete_task(self, i: int):
@@ -130,7 +134,6 @@ class Manager:
 
             #edit
             self.edit_task(i, duration= duration.total_seconds())
-            self.edit_task(i, status="Completed")
             self.edit_task(i, Completion_time= datetime.now().strftime("%d.%m.%Y"))
             self.edit_task(i, points= points)
             #add points (duration*Priority)

@@ -4,18 +4,20 @@ import json
 import os
 
 class Profile:
-    def __init__(self, name='None', total_points=0, missed_deadlines=0):
+    def __init__(self, name='None', total_points=0):
         self.name = name
         self.total_points = total_points
-        self.missed_deadlines = missed_deadlines
+        # self.missed_deadlines = missed_deadlines
         self.completed_tasks = 0
         self.todo_tasks = 0
         self.ongoing_tasks = 0
         self.tasklist = pd.read_csv('tasklist.csv')
+        self.tasklist['Deadline'] = pd.to_datetime(self.tasklist['Deadline'])
         self.calculate_completed_tasks()
         self.calculate_todo_tasks()
         self.calculate_inprogress_tasks()
         self.calculate_total_points()
+        # self.calculate_missed_deadlines()
 
     def calculate_completed_tasks(self):
         completed_tasks = self.tasklist[self.tasklist['Status'] == 'Completed']
@@ -32,17 +34,15 @@ class Profile:
     def calculate_total_points(self):
         self.total_points = int(self.tasklist['Points'].sum())
 
-    #CURRENTLY WORKING ON THIS
     # def calculate_missed_deadlines(self):
-    #     missed_deadlines = self.tasklist[self.tasklist['Status'] == 'To Do']
-    #     missed_deadlines = missed_deadlines[missed_deadlines['Deadline'] < pd.Timestamp.now()]
+    #     missed_deadlines = self.tasklist[(self.tasklist['Status'] == 'In Progress') & (self.tasklist['Deadline'] < pd.Timestamp.now())]
     #     self.missed_deadlines = len(missed_deadlines)
     
     def to_dict(self):
         return {
             'name': self.name,
             'total_points': self.total_points,
-            'missed_deadlines': self.missed_deadlines,
+            # 'missed_deadlines': self.missed_deadlines,
             'completed_tasks': self.completed_tasks,
             'todo_tasks': self.todo_tasks,
             'ongoing_tasks': self.inprogress_tasks
@@ -70,23 +70,20 @@ class Profile:
         with open(filename, 'w') as file:
             json.dump(data, file, indent=4)
 
-    def update_and_save(self, name=None, total_points=None, missed_deadlines=None):
+    def update_and_save(self, name=None, total_points=None):
         if name is not None:
             self.name = name
         if total_points is not None:
             self.total_points = total_points
-        if missed_deadlines is not None:
-            self.missed_deadlines = missed_deadlines
+        # if missed_deadlines is not None:
+        #     self.missed_deadlines = missed_deadlines
         self.calculate_completed_tasks()
         self.calculate_todo_tasks()
         self.calculate_inprogress_tasks()
         self.calculate_total_points()
+        # self.calculate_missed_deadlines()
         self.save_to_json()
 
     def __str__(self):
-        return f"Name: {self.name}\nTotal Points: {self.total_points}\nCompleted Tasks: {self.completed_tasks}\nMissed Deadlines: {self.missed_deadlines}\nTodo Tasks: {self.todo_tasks}\nIn Progress Tasks: {self.inprogress_tasks}"
+        return f"Name: {self.name}\nTotal Points: {self.total_points}\nCompleted Tasks: {self.completed_tasks}\nTodo Tasks: {self.todo_tasks}\nIn Progress Tasks: {self.inprogress_tasks}"
 
-# Test the profile functions
-profile = Profile("Name Surname")
-print(profile)
-profile.update_and_save()

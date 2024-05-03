@@ -25,21 +25,15 @@ class Manager:
             print("File not found. Created a new empty dataframe.")
 
     def add_task(self, title, description="", deadline=None, category=None, priority=0, status="To Do", completion_time=True, duration_planned=None, duration=None, points=None):
+        if status == 'Completed':
+            raise ValueError("Cannot add a task with status already 'Completed'.")
+        
         self.tasklist.loc[len(self.tasklist)] = [title, description, taskValidator.validateDeadline(deadline), category, taskValidator.validatePriority(priority), taskValidator.validateStatus(status), completion_time, duration_planned, duration, points]
         self.tasklist.to_csv(self.file_path, index=False)
         #check it status in 'In Progress' and call the set_inprogress function
         if status == 'In Progress':
             self.set_inprogress(len(self.tasklist)-1)
 
-    def delete_task(self, i: int):
-        if i < len(self.tasklist) and i >= 0:
-            self.tasklist.drop(i, inplace=True)
-            #self.order_by('i') #to make sure the original index is not changed (index shows recency)
-            #maybe a way to restore the order before delet was called
-            self.tasklist.reset_index(drop=True, inplace=True)
-            self.tasklist.to_csv(self.file_path, index=False)
-        else:
-            print("Index out of range.")
 
     def edit_task(self, i: int, title=None, description=None, deadline=None, category=None, priority=None, status=None, completion_time=None, duration_planned=None, duration=None, points=None):
         if i < len(self.tasklist) and i >= 0:
@@ -74,6 +68,16 @@ class Manager:
                 self.tasklist.at[i, "Duration"] = duration
             if points:
                 self.tasklist.at[i, "Points"] = points
+            self.tasklist.to_csv(self.file_path, index=False)
+        else:
+            print("Index out of range.")
+
+    def delete_task(self, i: int):
+        if i < len(self.tasklist) and i >= 0:
+            self.tasklist.drop(i, inplace=True)
+            #self.order_by('i') #to make sure the original index is not changed (index shows recency)
+            #maybe a way to restore the order before delet was called
+            self.tasklist.reset_index(drop=True, inplace=True)
             self.tasklist.to_csv(self.file_path, index=False)
         else:
             print("Index out of range.")

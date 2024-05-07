@@ -87,3 +87,4 @@ class Profile:
     def __str__(self):
         return f"Name: {self.name}\nTotal Points: {self.total_points}\nCompleted Tasks: {self.completed_tasks}\nTodo Tasks: {self.todo_tasks}\nIn Progress Tasks: {self.inprogress_tasks}"
 
+Profile(name='Alice').save_to_json()

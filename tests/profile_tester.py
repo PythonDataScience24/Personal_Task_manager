@@ -1,12 +1,13 @@
 import unittest
 import pandas as pd
-from profile_class import Profile
+from src.profile_class import Profile
+
 import json
 import os
 
 class TestProfile(unittest.TestCase):
     def setUp(self):
-        self.profile = Profile('Test', total_points=0)
+        self.profile = Profile('Test')
         self.profile.tasklist = pd.read_csv('tasklist.csv')
         self.profile.tasklist['Deadline'] = pd.to_datetime(self.profile.tasklist['Deadline'])
 

@@ -73,7 +73,7 @@ class TestProfile(unittest.TestCase):
         self.profile.completed_tasks = 10
         self.profile.todo_tasks = 5
         self.profile.inprogress_tasks = 3
-        self.profile.save_to_json('tests/test.json')
+        self.profile.update_and_save('tests/test.json')
         with open('tests/test.json', 'r') as file:
             data= json.load(file)
             self.assertEqual(data[0]['name'], self.profile.name)

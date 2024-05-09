@@ -7,6 +7,8 @@ import json
 
 
 
+
+
 class Manager:
     def __init__(self):
         self.file_path = "tasklist.csv"
@@ -24,7 +26,7 @@ class Manager:
             self.tasklist.to_csv(self.file_path, index=False)
             print("File not found. Created a new empty dataframe.")
 
-    def add_task(self, title, description="", deadline=None, category=None, priority=0, status="To Do", completion_time=True, duration_planned=None, duration=None, points=None):
+    def add_task(self, title='', description="", deadline='', category=None, priority=0, status="To Do", completion_time=None, duration_planned=None, duration=None, points=None):
         if status == 'Completed':
             raise ValueError("Cannot add a task with status already 'Completed'.")
         
@@ -33,7 +35,7 @@ class Manager:
         #check it status in 'In Progress' and call the set_inprogress function
         if status == 'In Progress':
             self.set_inprogress(len(self.tasklist)-1)
-
+        
 
     def edit_task(self, i: int, title=None, description=None, deadline=None, category=None, priority=None, status=None, completion_time=None, duration_planned=None, duration=None, points=None):
         if i < len(self.tasklist) and i >= 0:
@@ -61,7 +63,7 @@ class Manager:
                 if status == 'Completed':
                     self.complete_task(i)
             if completion_time:
-                self.tasklist.at[i, "Completion Time"] = completion_time
+                self.tasklist.at[i, "Completion Time"] = taskValidator.validateDeadline(completion_time)
             if duration_planned:
                 self.tasklist.at[i, "Duration Planned"] = duration_planned
             if duration:
@@ -84,6 +86,7 @@ class Manager:
 
     def print_tasklist(self):
         print(self.tasklist)
+
     #not tested!!
     def set_inprogress(self, i):
         if i < len(self.tasklist) and i >= 0:
@@ -153,8 +156,8 @@ class Manager:
             return sortedbyTitle_df
         
         if attribute == 'Deadline':
-            #first need to define datatype of Deadline
-            return 0
+            sortedbyDeadline_df = self.tasklist.sort_values(by='Deadline', ascending=asc)
+            return sortedbyDeadline_df
         
         if attribute == 'Category':
             sortedbyCategory_df = self.tasklist.sort_values(by='Category', ascending=asc, key=lambda x: x.str.lower())
@@ -169,8 +172,9 @@ class Manager:
             return sortedbyStatus_df
 
         if attribute == 'Duration Planned':
-            #first datatype needs to be defined
-            return 0
+            sortedbyDurationPlanned_df = self.tasklist.sort_values(by= 'Duration Planned', ascending=asc)
+            return sortedbyDurationPlanned_df
+        
         if attribute == 'i':
             sortedbyIndex_df = self.tasklist.sort_index(ascending=asc)
             return sortedbyIndex_df
@@ -182,7 +186,7 @@ class Manager:
     def addCategory(self, newCategory):
         categories = self.tasklist["Category"].unique()
         if newCategory not in categories:
-            self.taskList["Category"].append(newCategory)
+            self.tasklist["Category"].append(newCategory)
             print(f"Category '{newCategory}' added successfully.")
         else:
             print(f"Category '{newCategory}' already exists.")

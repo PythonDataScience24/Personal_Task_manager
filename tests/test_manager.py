@@ -1,6 +1,9 @@
+from datetime import datetime
 import sys
 sys.path.append('src')
 
+
+from taskValidator import taskValidator
 import unittest
 import pandas as pd
 import sys
@@ -9,7 +12,7 @@ import os
 from unittest.mock import patch, MagicMock
 from manager import Manager
 
-# open tests: set_inprogress() / complete_task() / filter() 
+# open tests: complete_task() / filter() 
 # Notes -> test_AddCategory doesnt work but logic of AddCategory probably flawed as it tries to add a new
 # row to the tasklist with just the category. it probably should initialize a seperate Category_List or be cut.
 
@@ -57,7 +60,6 @@ class TestManager(unittest.TestCase):
                               ["Title", "Description", "Deadline", "Category", "Priority", "Status",
                                 "Completion Time", "Duration Planned", "Duration", "Points"])
 
-    
     @patch.object(pd, 'read_csv')
     @patch('os.path.exists')
     @patch.object(pd.DataFrame, 'to_csv')
@@ -135,8 +137,7 @@ class TestManager(unittest.TestCase):
         mock_print.assert_called_with("Index out of range.")
         assert len(manager.tasklist) > 0
         assert manager.tasklist.iloc[0]['Title'] == 'B'
-
-    
+        
     @patch.object(pd, 'read_csv')
     @patch('os.path.exists')
     @patch.object(pd.DataFrame, 'to_csv')    
@@ -202,5 +203,101 @@ class TestManager(unittest.TestCase):
         for category in categories:
             assert category == existingCategories[i]
             i = i + 1
+    
+    @patch.object(pd, 'read_csv')
+    @patch('os.path.exists')
+    @patch.object(pd.DataFrame, 'to_csv') 
+    def test_set_inProgress(self, mock_to_csv, mock_csv_exists, mock_read_csv):
+
+        mock_csv_exists.return_value = True
+        manager = Manager()
+        mock_to_csv.to_csv = MagicMock()
+        self.dfSetUp()
+        manager.tasklist = self.dfTest
+
+        #reset return value
+        mock_csv_exists.return_value = False
+
+        manager.add_task(title='A' , description="A", deadline= "1.1.2025", priority=3, category='B',
+                         status="To Do", duration_planned=25)
+        manager.add_task(title='B' , description="B", deadline= "1.1.2025", priority=3, category='A',
+                         status="To Do", duration_planned=25)
+        #first call of the method through edit task
+        manager.edit_task(0, status='In Progress')
         
+        #second call
+        #change value because json got created on first iteration
+        mock_csv_exists.return_value = True
+        manager.edit_task(1, status='In Progress')
+        
+        assert manager.tasklist.iloc[0]['Status'] == 'In Progress'
+        assert manager.tasklist.iloc[1]['Status'] == 'In Progress'
+        
+        now = datetime.now()
+        formatted_time = now.strftime("%Y-%m-%d %H:%M")
+        
+        expectedData = [
+                {
+        "id": 0,
+        "time": formatted_time
+        },
+        {
+        "id": 1,
+        "time": formatted_time
+        }
+        ]
+
+        with open('timestamps.json', 'r') as file:
+            data = json.load(file)
+        
+        self.assertEqual(data, expectedData)
+
+
+    @patch.object(taskValidator, 'validateDeadline')
+    @patch('datetime.datetime')
+    @patch.object(pd, 'read_csv')
+    @patch('os.path.exists')
+    @patch.object(pd.DataFrame, 'to_csv') 
+    def test_complete_task(self, mock_to_csv, mock_csv_exists, mock_read_csv, mock_datetime, mock_validateDeadline):
+        
+        mock_validateDeadline.return_value = None
+        mock_csv_exists.return_value = True
+        mock_datetime.now.return_value = datetime.now()
+        manager = Manager()
+        mock_to_csv.to_csv = MagicMock()
+        self.dfSetUp()
+        manager.tasklist = self.dfTest
+
+        manager.add_task(title='A' , description="A", priority=3, category='B',
+                         status="To Do", duration_planned=25)
+        manager.add_task(title='B' , description="B", priority=3, category='A',
+                         status="To Do", duration_planned=25)
+        exampleData = [
+        {
+        "id": 0,
+        "time": "2024-05-10 13:40"
+        },
+        {
+        "id": 1,
+        "time": "2024-05-10 13:45"
+        }
+        ]
+
+        with open('timestamps.json', 'w') as file:
+                json.dump(exampleData, file, indent=4)
+        
+
+        
+        mock_datetime.now.return_value = datetime(2024,5,10,14,0,0)
+        manager.edit_task(1, status='Completed')
+
+        assert manager.tasklist.iloc[1]['Status'] == 'Completed'
+        assert manager.tasklist.iloc[1]['Duration'] == 15*60
+        assert manager.tasklist.iloc[1]['Points'] == 45
+        
+        
+
+
+        
+
 

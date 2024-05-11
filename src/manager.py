@@ -121,6 +121,7 @@ class Manager:
     def complete_task(self, i: int):
         if i < len(self.tasklist) and i >= 0:
             now = datetime.now()
+            print(now)
             formatted_time = now.strftime("%Y-%m-%d %H:%M")
             
             #checks if file got created
@@ -138,7 +139,6 @@ class Manager:
             #convert timestamp to a datetimeobject so we can substract it from now
             timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M")
             #creates a timedelta object which can be converted into seconds
-            print(now)
             duration = now - timestamp
             #calc points (per min in this example)
             points = (duration.total_seconds() //60) * priority

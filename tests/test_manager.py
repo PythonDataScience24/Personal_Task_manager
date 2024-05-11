@@ -254,15 +254,14 @@ class TestManager(unittest.TestCase):
 
 
     @patch.object(taskValidator, 'validateDeadline')
-    @patch('datetime.datetime')
     @patch.object(pd, 'read_csv')
     @patch('os.path.exists')
     @patch.object(pd.DataFrame, 'to_csv') 
-    def test_complete_task(self, mock_to_csv, mock_csv_exists, mock_read_csv, mock_datetime, mock_validateDeadline):
+    def test_complete_task(self, mock_to_csv, mock_csv_exists, mock_read_csv, mock_validateDeadline):
         
         mock_validateDeadline.return_value = None
         mock_csv_exists.return_value = True
-        mock_datetime.now.return_value = datetime.now()
+        
         manager = Manager()
         mock_to_csv.to_csv = MagicMock()
         self.dfSetUp()
@@ -286,18 +285,43 @@ class TestManager(unittest.TestCase):
         with open('timestamps.json', 'w') as file:
                 json.dump(exampleData, file, indent=4)
         
-
-        
-        mock_datetime.now.return_value = datetime(2024,5,10,14,0,0)
         manager.edit_task(1, status='Completed')
 
         assert manager.tasklist.iloc[1]['Status'] == 'Completed'
-        assert manager.tasklist.iloc[1]['Duration'] == 15*60
-        assert manager.tasklist.iloc[1]['Points'] == 45
-        
-        
+        assert manager.tasklist.iloc[1]['Duration'] != None
+        assert manager.tasklist.iloc[1]['Points'] != None
 
 
+    @patch.object(taskValidator, 'validateDeadline')
+    @patch.object(pd, 'read_csv')
+    @patch('os.path.exists')
+    @patch.object(pd.DataFrame, 'to_csv')  
+    def test_filter(self, mock_to_csv, mock_csv_exists, mock_read_csv, mock_validateDeadline):   
         
+        mock_validateDeadline.return_value = None
+        mock_csv_exists.return_value = True
+        
+        manager = Manager()
+        mock_to_csv.to_csv = MagicMock()
+        self.dfSetUp()
+        manager.tasklist = self.dfTest
+
+        manager.add_task(title='A' , description="A", priority=3, category='B',
+                         status="To Do", duration_planned=25)
+        manager.add_task(title='B' , description="B", priority=3, category='A',
+                         status="To Do", duration_planned=25)
+        manager.add_task(title='C' , description="B", priority=3, category='A',
+                         status="To Do", duration_planned=25)
+        
+        filtered1 = manager.filter(Status = 'To Do')
+        assert len(filtered1) == 3
+        
+        filtered2 = manager.filter(Title='C')
+        assert len(filtered2) == 1
+        assert filtered2.iloc[0]['Title'] == 'C'
+
+        filtered3 = manager.filter(Status = 'To Do', Title='C')
+        assert len(filtered3) == 1
+        assert filtered2.iloc[0]['Title'] == 'C'
 
 

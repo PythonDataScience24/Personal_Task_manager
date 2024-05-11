@@ -12,7 +12,7 @@ import os
 from unittest.mock import patch, MagicMock
 from manager import Manager
 
-# open tests: complete_task() / filter() 
+# open tests: complete_task()
 # Notes -> test_AddCategory doesnt work but logic of AddCategory probably flawed as it tries to add a new
 # row to the tasklist with just the category. it probably should initialize a seperate Category_List or be cut.
 
@@ -252,7 +252,7 @@ class TestManager(unittest.TestCase):
         
         self.assertEqual(data, expectedData)
 
-
+    #i am unable to mock datetime.now and therefore i dont know how to test it more throughly
     @patch.object(taskValidator, 'validateDeadline')
     @patch.object(pd, 'read_csv')
     @patch('os.path.exists')

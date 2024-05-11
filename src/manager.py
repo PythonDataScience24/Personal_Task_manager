@@ -121,7 +121,6 @@ class Manager:
     def complete_task(self, i: int):
         if i < len(self.tasklist) and i >= 0:
             now = datetime.now()
-            print(now)
             formatted_time = now.strftime("%Y-%m-%d %H:%M")
             
             #checks if file got created
@@ -144,7 +143,7 @@ class Manager:
             points = (duration.total_seconds() //60) * priority
 
             #edit
-            self.edit_task(i, duration= duration.total_seconds())
+            self.edit_task(i, duration= duration.total_seconds()//60)
             self.edit_task(i, completion_time= formatted_time)
             self.edit_task(i, points= points)
             #add points (duration*Priority)

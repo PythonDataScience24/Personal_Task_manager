@@ -252,7 +252,7 @@ class TestManager(unittest.TestCase):
         
         self.assertEqual(data, expectedData)
 
-    #i am unable to mock datetime.now and therefore i dont know how to test it more throughly
+    
     @patch.object(taskValidator, 'validateDeadline')
     @patch.object(pd, 'read_csv')
     @patch('os.path.exists')
@@ -287,9 +287,34 @@ class TestManager(unittest.TestCase):
         
         manager.edit_task(1, status='Completed')
 
+        #Code out of the Method:##############################################################
+
+        now = datetime.now()
+        formatted_time = now.strftime("%Y-%m-%d %H:%M")
+
+        #checks if file got created
+        if not os.path.exists('timestamps.json'):
+            print(f"No timestamps")
+            return None
+
+        #filters for correct timestamp
+        with open('timestamps.json', 'r') as file:
+            data = json.load(file)
+            timestamp_str = next((entry['time'] for entry in data if entry['id'] == 1), None)
+
+        #extract priority for points calculation
+        priority = manager.tasklist.iloc[1]['Priority']
+        #convert timestamp to a datetimeobject so we can substract it from now
+        timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M")
+        #creates a timedelta object which can be converted into seconds
+        duration = now - timestamp
+        #calc points (per min in this example)
+        points = (duration.total_seconds() //60) * priority
+        #end of method code######################################################################
+
         assert manager.tasklist.iloc[1]['Status'] == 'Completed'
-        assert manager.tasklist.iloc[1]['Duration'] != None
-        assert manager.tasklist.iloc[1]['Points'] != None
+        assert manager.tasklist.iloc[1]['Duration'] == duration.total_seconds() //60
+        assert manager.tasklist.iloc[1]['Points'] == points
 
 
     @patch.object(taskValidator, 'validateDeadline')

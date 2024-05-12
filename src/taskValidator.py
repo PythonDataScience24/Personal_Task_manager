@@ -49,10 +49,12 @@ class taskValidator:
     @staticmethod
     def validateStatus(x):
         #status has to be either "To Do", "In Progress", "Completed"
-        valid_statuses = ["To Do", "In Progress", "Completed"]
-        if x in valid_statuses:
-            return x
+        valid_statuses = ["to do", "in progress", "completed"]
+        
+        if x.strip().lower() in valid_statuses:
+            return x.title().strip()
         else:
             print("Status is not valid.")
             return None
+   
    

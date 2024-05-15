@@ -203,4 +203,7 @@ class Manager:
             else:
                 print(f"Invalid attribute: {attribute}")
         return filtered_tasklist
+    
+    def get_tasklist(self):
+        return self.tasklist
 

@@ -1,56 +1,106 @@
 import tkinter as tk
+from manager import Manager
 
-root = tk.Tk()
-root.title("TaskTask")
+class TaskWidget(tk.Frame):
+    def __init__(self, parent, task, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.task = task
+        self.task_title = task['Title']
+        self.detail_visible = False
+        self.config(bg="white", height=50)
+        self.create_widgets()
+        self.pack(fill=tk.X, pady=2)
 
-root.geometry("600x500")
-root.resizable(False, False)
+    def create_widgets(self):
+        self.task_label = tk.Label(self, text=self.task_title, bg="white")
+        self.task_label.pack(fill=tk.X, padx=10, pady=5)
+        self.task_label.bind("<Button-1>", self.toggle_details)
 
-# Create top bar
-top_bar = tk.Frame(root, bg="gray", height=50)
-top_bar.pack(fill=tk.X)
+        self.details_frame = tk.Frame(self, bg="light grey", height=50)
+        self.details_label = tk.Label(self.details_frame, text=f"{self.task['Description']}", bg="light grey")
+        self.details_label.pack(padx=10, pady=5)
 
-# Create buttons for sections
-tasks_btn = tk.Button(top_bar, text="Tasks", padx=10)
-tasks_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=5)
+    def toggle_details(self, event):
+        if self.detail_visible:
+            self.details_frame.pack_forget()
+            self.detail_visible = False
+        else:
+            self.details_frame.pack(fill=tk.X, after=self.task_label)
+            self.detail_visible = True
 
-statistics_btn = tk.Button(top_bar, text="Statistics", padx=10)
-statistics_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=5)
+class TodoApp(tk.Tk):
+    def __init__(self, manager):
+        super().__init__()
+        self.manager = manager
+        self.title("TaskTask")
+        self.geometry("600x500")
+        self.resizable(False, False)
+        self.create_widgets()
 
-# Create section for tasks
-tasks_section = tk.Frame(root, bg="white")
-tasks_section.pack(fill=tk.BOTH, expand=True)
+    def create_widgets(self):
+        top_bar = tk.Frame(self, bg="blue", height=50)
+        top_bar.pack(fill=tk.X)
 
-# Create example list of tasks
-tasks_list = tk.Listbox(tasks_section, bg="white", selectbackground="lightgray")
-tasks_list.pack(fill=tk.BOTH, expand=True)
+        tasks_btn = tk.Button(top_bar, text="Tasks", command=self.show_tasks)
+        tasks_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=5)
 
-# Add example entries to the list
-tasks_list.insert(tk.END, "Task 1")
-tasks_list.insert(tk.END, "Task 2")
-tasks_list.insert(tk.END, "Task 3")
-tasks_list.insert(tk.END, "Task 4")
+        statistics_btn = tk.Button(top_bar, text="Statistics", command=self.show_statistics)
+        statistics_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=5)
 
-# Create section for statistics
-statistics_section = tk.Frame(root, bg="white")
-statistics_section.pack(fill=tk.BOTH, expand=True)
+        # Filter bar section
+        filter_bar = tk.Frame(self, bg="grey", height=50)
+        filter_bar.pack(fill=tk.X)
 
-# Hide statistics section initially
-statistics_section.pack_forget()
+        # Setup for filters
+        self.filters = {"Priority": tk.StringVar(), "Category": tk.StringVar(), "Status": tk.StringVar()}
+        for f, var in self.filters.items():
+            var.set("Select " + f)
+            dropdown = tk.OptionMenu(filter_bar, var, "Any", *["Option1", "Option2"])  # Placeholder options
+            dropdown.pack(side=tk.LEFT, padx=10, pady=5)
+            var.trace("w", lambda *_, key=f: self.apply_filters(key))
 
-# Function to switch to tasks section
-def show_tasks():
-    tasks_section.pack(fill=tk.BOTH, expand=True)
-    statistics_section.pack_forget()
+        self.tasks_section = tk.Frame(self, bg="white")
+        self.tasks_section.pack(fill=tk.BOTH, expand=True)
 
-# Function to switch to statistics section
-def show_statistics():
-    tasks_section.pack_forget()
-    statistics_section.pack(fill=tk.BOTH, expand=True)
+        self.tasks_canvas = tk.Canvas(self.tasks_section)
+        self.tasks_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-# Configure button commands
-tasks_btn.configure(command=show_tasks)
-statistics_btn.configure(command=show_statistics)
+        self.tasks_scrollbar = tk.Scrollbar(self.tasks_section, orient="vertical", command=self.tasks_canvas.yview)
+        self.tasks_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.tasks_canvas.configure(yscrollcommand=self.tasks_scrollbar.set)
 
-# Start the application
-root.mainloop()
+        self.tasks_frame = tk.Frame(self.tasks_canvas, bg="white")
+        self.tasks_canvas.create_window((0, 0), window=self.tasks_frame, anchor="nw")
+        self.tasks_frame.bind('<Configure>', lambda e: self.tasks_canvas.configure(scrollregion=self.tasks_canvas.bbox("all")))
+
+        self.statistics_section = tk.Frame(self, bg="white")
+        self.statistics_section.pack(fill=tk.BOTH, expand=True)
+        self.statistics_section.pack_forget()
+
+        self.load_tasks()
+
+    def load_tasks(self, tasks=None):
+        if tasks is None:
+            tasks = self.manager.get_tasklist()
+        for widget in self.tasks_frame.winfo_children():
+            widget.destroy()
+        for _, task in tasks.iterrows():
+            TaskWidget(self.tasks_frame, task)
+
+    def apply_filters(self, key):
+        filters = {k: v.get() for k, v in self.filters.items() if v.get() != "Select " + k and v.get() != 'Any'}
+        filtered_tasks = self.manager.filter(**filters)
+        self.load_tasks(filtered_tasks)
+
+    def show_tasks(self):
+        self.tasks_section.pack(fill=tk.BOTH, expand=True)
+        self.statistics_section.pack_forget()
+
+    def show_statistics(self):
+        self.tasks_section.pack_forget()
+        self.statistics_section.pack(fill=tk.BOTH, expand=True)
+
+if __name__ == "__main__":
+    manager = Manager()
+    app = TodoApp(manager)
+    app.mainloop()

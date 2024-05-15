@@ -16,8 +16,18 @@ class TaskWidget(tk.Frame):
         self.task_label.pack(fill=tk.X, padx=10, pady=5)
         self.task_label.bind("<Button-1>", self.toggle_details)
 
+        #adds colorcode based on priority
+        colors_pallete = {
+            1 : 'green',
+            2 : 'yellow',
+            3 : 'red'
+        }
+        priority_color = colors_pallete.get(self.task['Priority'], 'light grey')
+
+
         self.details_frame = tk.Frame(self, bg="light grey", height=50)
-        self.details_label = tk.Label(self.details_frame, text=f"{self.task['Description']}", bg="light grey")
+        self.details_label = tk.Label(self.details_frame, text=f"{self.task['Description']} - {self.task['Priority']} - {self.task['Deadline']}", bg= priority_color)
+
         self.details_label.pack(padx=10, pady=5)
 
     def toggle_details(self, event):
@@ -53,9 +63,21 @@ class TodoApp(tk.Tk):
 
         # Setup for filters
         self.filters = {"Priority": tk.StringVar(), "Category": tk.StringVar(), "Status": tk.StringVar()}
+
+        #options for the diffrent filters
+        priority_options = {"Any", '0', '1', '2', '3'}
+        category_options = {"Any","Work", "Home", "Study", "Personal", "Health"} #need maybe an dynamic creation
+        status_options = {"Any", "To Do", "In Progress", "Completed"}
+
+        options_map = {
+            "Priority" : priority_options,
+            "Category" : category_options,
+            "Status" : status_options
+        }
+
         for f, var in self.filters.items():
             var.set("Select " + f)
-            dropdown = tk.OptionMenu(filter_bar, var, "Any", *["Option1", "Option2"])  # Placeholder options
+            dropdown = tk.OptionMenu(filter_bar, var, *options_map[f]) 
             dropdown.pack(side=tk.LEFT, padx=10, pady=5)
             var.trace("w", lambda *_, key=f: self.apply_filters(key))
 
@@ -79,6 +101,7 @@ class TodoApp(tk.Tk):
 
         self.load_tasks()
 
+
     def load_tasks(self, tasks=None):
         if tasks is None:
             tasks = self.manager.get_tasklist()
@@ -86,6 +109,10 @@ class TodoApp(tk.Tk):
             widget.destroy()
         for _, task in tasks.iterrows():
             TaskWidget(self.tasks_frame, task)
+
+            #add delete button
+            delete_button = tk.Button(self.tasks_frame, text="Delete", command=lambda t=task : self.delete_task(t))
+            delete_button.grid(row=id, column=1, padx=10, pady=5) 
 
     def apply_filters(self, key):
         filters = {k: v.get() for k, v in self.filters.items() if v.get() != "Select " + k and v.get() != 'Any'}

@@ -205,5 +205,13 @@ class Manager:
                 print(f"Invalid attribute: {attribute}")
         return filtered_tasklist
 
-    def deadlineNotifications(self):
-        
+    def upcomingDeadlines(self):
+        now = datetime.now()
+        tomorrow = now + datetime.timedelta(days=1)
+
+        mask = (self.tasklist['Deadlines'] >= now) & (self.tasklist['Deadlines'] < tomorrow)
+        upcoming_deadlines = self.tasklist.loc[mask]
+
+        return upcoming_deadlines
+         
+

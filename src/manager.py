@@ -117,7 +117,6 @@ class Manager:
 
             return 0
 
-    #not tested!!
     def complete_task(self, i: int):
         if i < len(self.tasklist) and i >= 0:
             now = datetime.now()
@@ -139,6 +138,7 @@ class Manager:
             timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M")
             #creates a timedelta object which can be converted into seconds
             duration = now - timestamp
+            print(now, duration, timestamp)
             #calc points (per min in this example)
             points = (duration.total_seconds() //60) * priority
 
@@ -185,7 +185,8 @@ class Manager:
         if attribute == 'Points':
             sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
             return sortedbyPoints_df
-        
+
+    #doesnt work    
     def addCategory(self, newCategory):
         categories = self.tasklist["Category"].unique()
         if newCategory not in categories:
@@ -204,3 +205,5 @@ class Manager:
                 print(f"Invalid attribute: {attribute}")
         return filtered_tasklist
 
+    def deadlineNotifications(self):
+        

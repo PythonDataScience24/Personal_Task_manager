@@ -1,5 +1,6 @@
 import tkinter as tk
 from manager import Manager
+from profile_class import Profile
 
 class TaskWidget(tk.Frame):
     def __init__(self, parent, task, *args, **kwargs):
@@ -16,18 +17,16 @@ class TaskWidget(tk.Frame):
         self.task_label.pack(fill=tk.X, padx=10, pady=5)
         self.task_label.bind("<Button-1>", self.toggle_details)
 
-        #adds colorcode based on priority
-        colors_pallete = {
-            1 : 'green',
-            2 : 'yellow',
-            3 : 'red'
+        # Adds color code based on priority
+        colors_palette = {
+            1: 'green',
+            2: 'yellow',
+            3: 'red'
         }
-        priority_color = colors_pallete.get(self.task['Priority'], 'light grey')
-
+        priority_color = colors_palette.get(self.task['Priority'], 'light grey')
 
         self.details_frame = tk.Frame(self, bg="light grey", height=50)
-        self.details_label = tk.Label(self.details_frame, text=f"{self.task['Description']} - {self.task['Priority']} - {self.task['Deadline']}", bg= priority_color)
-
+        self.details_label = tk.Label(self.details_frame, text=f"{self.task['Description']} - {self.task['Priority']} - {self.task['Deadline']}", bg=priority_color)
         self.details_label.pack(padx=10, pady=5)
 
     def toggle_details(self, event):
@@ -39,12 +38,13 @@ class TaskWidget(tk.Frame):
             self.detail_visible = True
 
 class TodoApp(tk.Tk):
-    def __init__(self, manager):
+    def __init__(self, manager, profile):
         super().__init__()
         self.manager = manager
+        self.profile = profile
         self.title("TaskTask")
         self.geometry("600x500")
-        self.resizable(False, False)
+        self.resizable(True, True)
         self.create_widgets()
 
     def create_widgets(self):
@@ -57,6 +57,13 @@ class TodoApp(tk.Tk):
         statistics_btn = tk.Button(top_bar, text="Statistics", command=self.show_statistics)
         statistics_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=5)
 
+        # Profile button
+        profile_button = tk.Button(top_bar, text="Profile", command=self.show_profile)
+        profile_button.pack(side=tk.RIGHT, padx=10, pady=5)
+
+        # Profile information
+        self.profile_info_label = tk.Label(self, text="", justify="left")
+
         # Filter bar section
         filter_bar = tk.Frame(self, bg="grey", height=50)
         filter_bar.pack(fill=tk.X)
@@ -64,7 +71,7 @@ class TodoApp(tk.Tk):
         # Setup for filters
         self.filters = {"Priority": tk.StringVar(), "Category": tk.StringVar(), "Status": tk.StringVar()}
 
-        #options for the diffrent filters
+        #options for the different filters
         priority_options = {"Any", '0', '1', '2', '3'}
         category_options = {"Any","Work", "Home", "Study", "Personal", "Health"} #need maybe an dynamic creation
         status_options = {"Any", "To Do", "In Progress", "Completed"}
@@ -101,18 +108,17 @@ class TodoApp(tk.Tk):
 
         self.load_tasks()
 
-
     def load_tasks(self, tasks=None):
         if tasks is None:
             tasks = self.manager.get_tasklist()
         for widget in self.tasks_frame.winfo_children():
             widget.destroy()
         for _, task in tasks.iterrows():
-            TaskWidget(self.tasks_frame, task)
+            task_widget = TaskWidget(self.tasks_frame, task)
 
-            #add delete button
-            delete_button = tk.Button(self.tasks_frame, text="Delete", command=lambda t=task : self.delete_task(t))
-            delete_button.grid(row=id, column=1, padx=10, pady=5) 
+            # Add delete button
+            delete_button = tk.Button(task_widget, text="Delete", command=lambda t=task: self.delete_task(t))
+            delete_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
     def apply_filters(self, key):
         filters = {k: v.get() for k, v in self.filters.items() if v.get() != "Select " + k and v.get() != 'Any'}
@@ -127,7 +133,16 @@ class TodoApp(tk.Tk):
         self.tasks_section.pack_forget()
         self.statistics_section.pack(fill=tk.BOTH, expand=True)
 
+    def show_profile(self):
+        if not self.profile_info_label.winfo_ismapped():
+            profile_info = f"Username: {self.profile.name}\nScore: {self.profile.total_points}"
+            self.profile_info_label.config(text=profile_info)
+            self.profile_info_label.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
+        else:
+            self.profile_info_label.pack_forget()
+
 if __name__ == "__main__":
     manager = Manager()
-    app = TodoApp(manager)
+    profile = Profile()
+    app = TodoApp(manager, profile)
     app.mainloop()

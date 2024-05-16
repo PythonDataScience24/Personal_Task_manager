@@ -24,18 +24,26 @@ class TaskWidget(tk.Frame):
         self.task_label = tk.Label(self, text=self.task_title, bg="white")
         self.task_label.pack(fill=tk.X, padx=10, pady=5)
         self.task_label.bind("<Button-1>", self.toggle_details)
+
+        #add colors to the status label
+        colors_palette_status ={
+            'In Progress' : 'yellow',
+            'Completed' : 'green'
+        }
+
+        self.color_status = colors_palette_status.get(self.task_status, 'light grey')
         
-        self.second_label = tk.Label(self, text=self.task_status, bg= self.color_status)
-        self.second_label.pack(fill=tk.X, padx=10, pady=5)
-        self.second_label.bind("<Button-1>", self.change_status)
+        self.status_label = tk.Label(self, text=self.task_status, bg= self.color_status)
+        self.status_label.pack(fill=tk.X, padx=10, pady=5)
+        self.status_label.bind("<Button-1>", self.change_status)
 
         # Adds color code based on priority
-        colors_palette = {
+        colors_palette_priority = {
             1: 'green',
             2: 'yellow',
             3: 'red'
         }
-        priority_color = colors_palette.get(self.task['Priority'], 'light grey')
+        priority_color = colors_palette_priority.get(self.task['Priority'], 'light grey')
 
         self.details_frame = tk.Frame(self, bg="light grey", height=50)
         self.details_label = tk.Label(self.details_frame, text=f"{self.task['Description']} - {self.task['Priority']} - {self.task['Deadline']}", bg=priority_color)
@@ -61,7 +69,7 @@ class TaskWidget(tk.Frame):
             self.task_status = 'Completed'
             self.color_status = 'green'
   
-        self.second_label.config(text=self.task_status, bg=self.color_status)
+        self.status_label.config(text=self.task_status, bg=self.color_status)
         
 
 

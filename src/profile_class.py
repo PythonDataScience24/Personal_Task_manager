@@ -28,12 +28,16 @@ class Profile:
         self.completed_tasks = 0
         self.todo_tasks = 0
         self.inprogress_tasks = 0
-        self.tasklist = pd.read_csv('tasklist.csv')
-        self.tasklist['Deadline'] = pd.to_datetime(self.tasklist['Deadline'])
+        self.load_tasklist()
         self.calculate_completed_tasks()
         self.calculate_todo_tasks()
         self.calculate_inprogress_tasks()
         self.calculate_total_points()
+
+    def load_tasklist(self):
+        """Load tasklist from CSV."""
+        self.tasklist = pd.read_csv('tasklist.csv')
+        self.tasklist['Deadline'] = pd.to_datetime(self.tasklist['Deadline'])
 
     def calculate_completed_tasks(self):
         """
@@ -85,22 +89,34 @@ class Profile:
             filename (str): The filename to save the JSON data to. Defaults to 'profile.json'.
         """
         profile_dict = self.to_dict()
+        data = self.load_json_data(filename)
+        index = next((index for (index, d) in enumerate(data) if d["name"] == self.name), None)
+        if index is not None:
+            data[index] = profile_dict
+        else:
+            data.append(profile_dict)
+        with open(filename, 'w') as file:
+            json.dump(data, file, indent=4)
+
+    @staticmethod
+    def load_json_data(filename='profile.json'):
+        """
+        Load JSON data from file.
+
+        Args:
+            filename (str): The filename to load the JSON data from. Defaults to 'profile.json'.
+
+        Returns:
+            list: List containing JSON data.
+        """
         data = []
         if os.path.exists(filename):
             with open(filename, 'r') as file:
                 try:
                     data = json.load(file)
-                    index = next((index for (index, d) in enumerate(data) if d["name"] == self.name), None)
-                    if index is not None:
-                        data[index] = profile_dict
-                    else:
-                        data.append(profile_dict)
                 except json.JSONDecodeError:
-                    data.append(profile_dict)
-        else:
-            data.append(profile_dict)
-        with open(filename, 'w') as file:
-            json.dump(data, file, indent=4)
+                    pass
+        return data
 
     def update_and_save(self, name=None, total_points=None):
         """

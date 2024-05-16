@@ -117,13 +117,17 @@ class TodoApp(tk.Tk):
             task_widget = TaskWidget(self.tasks_frame, task)
 
             # Add delete button
-            delete_button = tk.Button(task_widget, text="Delete", command=lambda t=task: self.delete_task(t))
+            delete_button = tk.Button(task_widget, text="Delete", command=lambda t=_ : self.delete_task(t))
             delete_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
     def apply_filters(self, key):
         filters = {k: v.get() for k, v in self.filters.items() if v.get() != "Select " + k and v.get() != 'Any'}
         filtered_tasks = self.manager.filter(**filters)
         self.load_tasks(filtered_tasks)
+    
+    def delete_task(self, rowidx):
+        self.manager.delete_task(rowidx)
+        self.load_tasks()
 
     def show_tasks(self):
         self.tasks_section.pack(fill=tk.BOTH, expand=True)

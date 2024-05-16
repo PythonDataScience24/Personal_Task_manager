@@ -1,63 +1,75 @@
-import pandas as pd
+"""This module provides a class to manage tasks."""
 import os
-from  taskValidator import taskValidator
-from datetime import datetime
 import json
-
-
-
-
-
+from datetime import datetime, timedelta
+import pandas as pd
+from taskValidator import taskValidator
 
 class Manager:
+    """Class to manage tasks."""
+
     def __init__(self):
+        """Initialize Manager class."""
         self.file_path = "tasklist.csv"
         self.create_tasklist()
 
     def create_tasklist(self):
-        
+        """Create a tasklist."""
         if os.path.exists(self.file_path):
-            # Read the CSV into a DataFrame
-            self.tasklist = pd.read_csv(self.file_path)
+            self.tasklist = pd.read_csv(self.file_path).read()
             print("File found and loaded into a dataframe.")
         else:
-            # Create an empty DataFrame if the file does not exist
-            self.tasklist = pd.DataFrame(columns=["Title", "Description", "Deadline", "Category", "Priority", "Status", "Completion Time", "Duration Planned", "Duration", "Points"])
+            self.tasklist = pd.DataFrame(columns=[
+                "Title", "Description", "Deadline", "Category",
+                "Priority", "Status", "Completion Time",
+                "Duration Planned", "Duration", "Points"
+            ])
             self.tasklist.to_csv(self.file_path, index=False)
             print("File not found. Created a new empty dataframe.")
 
-    def add_task(self, title='', description="", deadline='', category=None, priority=0, status="To Do", completion_time=None, duration_planned=None, duration=None, points=None):
+    def add_task(self, title='', description="", deadline='',
+             category=None, priority=0, status="To Do",
+             completion_time=None, duration_planned=None,
+             duration=None, points=None):
+        """Add a task to the tasklist."""
         if status == 'Completed':
             raise ValueError("Cannot add a task with status already 'Completed'.")
-        
-        self.tasklist.loc[len(self.tasklist)] = [title, description, taskValidator.validateDeadline(deadline), category, taskValidator.validatePriority(priority), taskValidator.validateStatus(status), completion_time, duration_planned, duration, points]
+
+        self.tasklist.loc[len(self.tasklist)] = [
+            title,
+            description,
+            taskValidator.validateDeadline(deadline),
+            category,
+            taskValidator.validatePriority(priority),
+            taskValidator.validateStatus(status),
+            completion_time,
+            duration_planned,
+            duration,
+            points
+        ]
         self.tasklist.to_csv(self.file_path, index=False)
-        #check it status in 'In Progress' and call the set_inprogress function
         if status == 'In Progress':
             self.set_inprogress(len(self.tasklist)-1)
-        
 
-    def edit_task(self, i: int, title=None, description=None, deadline=None, category=None, priority=None, status=None, completion_time=None, duration_planned=None, duration=None, points=None):
-        if i < len(self.tasklist) and i >= 0:
+    def edit_task(self, i: int, title=None, description=None,
+              deadline=None, category=None, priority=None,
+              status=None, completion_time=None,
+              duration_planned=None, duration=None,
+              points=None):
+        """Edit a task in the tasklist."""
+        if 0 <= i < len(self.tasklist):
             if title:
-                #needs no restriction
                 self.tasklist.at[i, "Title"] = title
             if description:
-                #needs no restriction
                 self.tasklist.at[i, "Description"] = description
             if deadline:
-                #needs restriction, cant be in the past
                 self.tasklist.at[i, "Deadline"] = taskValidator.validateDeadline(deadline)
             if category:
-                # categories will get saved in a list ["Work", "Personal", "Health", "Other"] for example
                 self.tasklist.at[i, "Category"] = category
             if priority:
-                #either 0, 1, 2, 3
                 self.tasklist.at[i, "Priority"] = taskValidator.validatePriority(priority)
             if status:
-                #either "To Do", "In Progress", "Completed"
                 self.tasklist.at[i, "Status"] = taskValidator.validateStatus(status)
-                #if status is 'In Progress' call set_inprogress, if status is 'Completed' call complete_task
                 if status == 'In Progress':
                     self.set_inprogress(i)
                 if status == 'Completed':
@@ -75,27 +87,28 @@ class Manager:
             print("Index out of range.")
 
     def delete_task(self, i: int):
+        """Delete a task from the tasklist."""
         if i < len(self.tasklist) and i >= 0:
             self.tasklist.drop(i, inplace=True)
-            #self.order_by('i') #to make sure the original index is not changed (index shows recency)
-            #maybe a way to restore the order before delet was called
             self.tasklist.reset_index(drop=True, inplace=True)
             self.tasklist.to_csv(self.file_path, index=False)
         else:
             print("Index out of range.")
 
     def print_tasklist(self):
+        """Print the tasklist."""
         print(self.tasklist)
 
     def set_inprogress(self, i):
+        """Set a task to 'In Progress'."""
         if i < len(self.tasklist) and i >= 0:
-            #saving current time in json
             now = datetime.now()
-            formatted_time = now.strftime("%Y-%m-%d %H:%M")
+            formatted_time = now.strftime(
+                "%Y-%m-%d %H:%M"
+            )
             filename = 'timestamps.json'
-            data =[]
+            data = []
 
-            #check if json file exists and open it
             if os.path.exists(filename):
                 with open(filename, 'r') as file:
                     try:
@@ -103,13 +116,10 @@ class Manager:
                         print("json file loaded")
                     except json.JSONDecodeError:
                         data = []
-            
-                    
-                    
-            #store the timestamp with id of the task
+
             data.append({
-                "id"   : i,
-                "time" : formatted_time
+                "id": i,
+                "time": formatted_time
             })
 
             with open(filename, 'w') as file:
@@ -118,85 +128,83 @@ class Manager:
             return 0
 
     def complete_task(self, i: int):
+        """Complete a task."""
         if i < len(self.tasklist) and i >= 0:
             now = datetime.now()
             formatted_time = now.strftime("%Y-%m-%d %H:%M")
-            
-            #checks if file got created
+
             if not os.path.exists('timestamps.json'):
                 print(f"No timestamps")
                 return None
-            
-            #filters for correct timestamp
+
             with open('timestamps.json', 'r') as file:
                 data = json.load(file)
                 timestamp_str = next((entry['time'] for entry in data if entry['id'] == i), None)
-            
-            #extract priority for points calculation
-            priority = self.tasklist.iloc[i]['Priority']
-            #convert timestamp to a datetimeobject so we can substract it from now
-            timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M")
-            #creates a timedelta object which can be converted into seconds
-            duration = now - timestamp
-            print(now, duration, timestamp)
-            #calc points (per min in this example)
-            points = (duration.total_seconds() //60) * priority
 
-            #edit
-            self.edit_task(i, duration= duration.total_seconds()//60)
-            self.edit_task(i, completion_time= formatted_time)
-            self.edit_task(i, points= points)
-            #add points (duration*Priority)
-        
+            priority = self.tasklist.iloc[i]['Priority']
+            timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M")
+            duration = now - timestamp
+
+            points = (duration.total_seconds() // 60) * priority
+
+            self.edit_task(i, duration=duration.total_seconds()//60)
+            self.edit_task(i, completion_time=formatted_time)
+            self.edit_task(i, points=points)
+
         else:
             print("Index out of range.")
 
-
-
     def order_by(self, attribute, asc=True):
+        """Sort the tasklist by a given attribute."""
         if attribute == 'Title':
-            sortedbyTitle_df = self.tasklist.sort_values(by='Title', ascending=asc, key=lambda x: x.str.lower() + x)
+            sortedbyTitle_df = self.tasklist.sort_values(
+                by='Title', ascending=asc, key=lambda x: x.str.lower() + x
+            )
             return sortedbyTitle_df
-        
+
         if attribute == 'Deadline':
-            sortedbyDeadline_df = self.tasklist.sort_values(by='Deadline', ascending=asc)
+            sortedbyDeadline_df = self.tasklist.sort_values(
+                by='Deadline', ascending=asc
+            )
             return sortedbyDeadline_df
-        
+
         if attribute == 'Category':
             sortedbyCategory_df = self.tasklist.sort_values(by='Category', ascending=asc, key=lambda x: x.str.lower())
             return sortedbyCategory_df
 
         if attribute == 'Priority':
-            sortedbyPriority_df = self.tasklist.sort_values(by='Priority', ascending=asc) 
+            sortedbyPriority_df = self.tasklist.sort_values(by='Priority', ascending=asc)
             return sortedbyPriority_df
-        
+
         if attribute == 'Status':
-            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=asc) #Completed last 
+            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=asc)
             return sortedbyStatus_df
 
         if attribute == 'Duration Planned':
-            sortedbyDurationPlanned_df = self.tasklist.sort_values(by= 'Duration Planned', ascending=asc)
+            sortedbyDurationPlanned_df = self.tasklist.sort_values(
+                by='Duration Planned', ascending=asc
+            )
             return sortedbyDurationPlanned_df
-        
+
         if attribute == 'i':
             sortedbyIndex_df = self.tasklist.sort_index(ascending=asc)
             return sortedbyIndex_df
-        #currently only attributes which are predefined have an order_by function (missing Duration)
+
         if attribute == 'Points':
             sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
             return sortedbyPoints_df
 
-    #doesnt work    
-    def addCategory(self, newCategory):
+    def add_category(self, new_category):
+        """Add a new category to the tasklist."""
         categories = self.tasklist["Category"].unique()
-        if newCategory not in categories:
-            self.tasklist["Category"].append(newCategory)
-            print(f"Category '{newCategory}' added successfully.")
+        if new_category not in categories:
+            self.tasklist["Category"].append(new_category)
+            print(f"Category '{new_category}' added successfully.")
         else:
-            print(f"Category '{newCategory}' already exists.")
-            
+            print(f"Category '{new_category}' already exists.")
 
     def filter(self, **kwargs):
+        """Filter the tasklist based on given criteria."""
         filtered_tasklist = self.tasklist.copy()
         for attribute, value in kwargs.items():
             if attribute in self.tasklist.columns:
@@ -205,13 +213,7 @@ class Manager:
                 print(f"Invalid attribute: {attribute}")
         return filtered_tasklist
 
-    def upcomingDeadlines(self):
-        now = datetime.now()
-        tomorrow = now + datetime.timedelta(days=1)
-
-        mask = (self.tasklist['Deadlines'] >= now) & (self.tasklist['Deadlines'] < tomorrow)
-        upcoming_deadlines = self.tasklist.loc[mask]
-
-        return upcoming_deadlines
-         
-
+    def upcoming_deadlines(self):
+        """Get upcoming deadlines."""
+        tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        return self.tasklist[self.tasklist['Deadline'] <= tomorrow]

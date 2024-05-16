@@ -1,5 +1,5 @@
 # Changes made to the code
-Specifically for the classes manager and profile_class using the principles od abstarction and decomposition
+Specifically for the classes manager and profile_class using the principles od abstarction and decomposition. These are only a few examples of all the improvements made.
 
 ## Manager Class:
 
@@ -87,11 +87,56 @@ Specifically for the classes manager and profile_class using the principles od a
 
 ### Abstraction:
 
-1. **Abstraction in Profile Class:**
-   - The Profile class abstracts the user's profile information, encapsulating it in a single class.
+1. **Refactoring `load_tasklist` method:**
+   - The `load_tasklist` method now focuses only on loading the tasklist DataFrame from a CSV file. It abstracts the loading process, making the `__init__` method cleaner.
+   - **Code (Previous):**
+     ```python
+    def __init__(self, name='None', total_points=0):
+        """
+        Initialize a profile with a name and total points.
 
-2. **Abstraction in `to_dict` method:**
-   - The `to_dict` method abstracts the conversion of a profile object into a dictionary.
+        Args:
+            name (str): The name of the profile. Defaults to 'None'.
+            total_points (int): The total points of the profile. Defaults to 0.
+        """
+        self.name = name
+        self.total_points = total_points
+        self.completed_tasks = 0
+        self.todo_tasks = 0
+        self.inprogress_tasks = 0
+        self.tasklist = pd.read_csv('tasklist.csv')
+        self.tasklist['Deadline'] = pd.to_datetime(self.tasklist['Deadline'])
+        self.calculate_completed_tasks()
+        self.calculate_todo_tasks()
+        self.calculate_inprogress_tasks()
+        self.calculate_total_points()
+
+    def load_tasklist(self):
+        """Load tasklist from CSV."""
+        self.tasklist = pd.read_csv('tasklist.csv')
+        self.tasklist['Deadline'] = pd.to_datetime(self.tasklist['Deadline'])
+     ```
+   - **Code (Improved):**
+     ```python
+    def __init__(self, name='None', total_points=0):
+        """Initialize a profile with a name and total points."""
+        self.name = name
+        self.total_points = total_points
+        self.completed_tasks = 0
+        self.todo_tasks = 0
+        self.inprogress_tasks = 0
+        self.load_tasklist()
+        self.calculate_completed_tasks()
+        self.calculate_todo_tasks()
+        self.calculate_inprogress_tasks()
+        self.calculate_total_points()
+
+    def load_tasklist(self):
+        """Load tasklist from CSV."""
+        self.tasklist = pd.read_csv('tasklist.csv')
+        self.tasklist['Deadline'] = pd.to_datetime(self.tasklist['Deadline'])
+     ```
+
 
 
 ### Decomposition:
@@ -163,18 +208,5 @@ Improved Code:
 
 2. **Decomposition in `update_and_save` method:**
    - The `update_and_save` method decomposes the tasks of updating profile attributes and saving to a JSON file into separate steps.
-   - **Code Example:**
-     ```python
-     class Profile:
-         def update_and_save(self, name=None, total_points=None):
-             if name is not None:
-                 self.name = name
-             if total_points is not None:
-                 self.total_points = total_points
-             self.calculate_completed_tasks()
-             self.calculate_todo_tasks()
-             self.calculate_inprogress_tasks()
-             self.calculate_total_points()
-             self.save_to_json()
-     ```
+
 

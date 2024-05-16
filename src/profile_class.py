@@ -16,13 +16,7 @@ class Profile:
     """
 
     def __init__(self, name='None', total_points=0):
-        """
-        Initialize a profile with a name and total points.
-
-        Args:
-            name (str): The name of the profile. Defaults to 'None'.
-            total_points (int): The total points of the profile. Defaults to 0.
-        """
+        """Initialize a profile with a name and total points."""
         self.name = name
         self.total_points = total_points
         self.completed_tasks = 0

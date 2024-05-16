@@ -7,19 +7,27 @@ from tkcalendar import Calendar
 import datetime as dt
 
 class TaskWidget(tk.Frame):
-    def __init__(self, parent, task, *args, **kwargs):
+    def __init__(self, parent, task, row, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.task = task
         self.task_title = task['Title']
         self.detail_visible = False
         self.config(bg="white", height=50)
+        self.task_status = task['Status']
+        self.idx = row
+        self.color_status = 'light grey'
         self.create_widgets()
         self.pack(fill=tk.X, pady=2)
+        
 
     def create_widgets(self):
         self.task_label = tk.Label(self, text=self.task_title, bg="white")
         self.task_label.pack(fill=tk.X, padx=10, pady=5)
         self.task_label.bind("<Button-1>", self.toggle_details)
+        
+        self.second_label = tk.Label(self, text=self.task_status, bg= self.color_status)
+        self.second_label.pack(fill=tk.X, padx=10, pady=5)
+        self.second_label.bind("<Button-1>", self.change_status)
 
         # Adds color code based on priority
         colors_palette = {
@@ -40,6 +48,22 @@ class TaskWidget(tk.Frame):
         else:
             self.details_frame.pack(fill=tk.X, after=self.task_label)
             self.detail_visible = True
+    
+    def change_status(self, event):
+        if self.task_status == 'To Do':
+            manager.edit_task(self.idx, status='In Progress')
+            self.task_status = 'In Progress'
+            self.color_status = 'yellow'
+        
+        
+        elif self.task_status == 'In Progress':
+            manager.edit_task(self.idx, status='Completed')
+            self.task_status = 'Completed'
+            self.color_status = 'green'
+  
+        self.second_label.config(text=self.task_status, bg=self.color_status)
+        
+
 
 class TodoApp(tk.Tk):
     def __init__(self, manager, profile):
@@ -121,11 +145,11 @@ class TodoApp(tk.Tk):
             tasks = self.manager.get_tasklist()
         for widget in self.tasks_frame.winfo_children():
             widget.destroy()
-        for _, task in tasks.iterrows():
-            task_widget = TaskWidget(self.tasks_frame, task)
+        for row, task in tasks.iterrows():
+            task_widget = TaskWidget(self.tasks_frame, task, row)
 
             # Add delete button
-            delete_button = tk.Button(task_widget, text="Delete", command=lambda t=_: self.delete_task(t))
+            delete_button = tk.Button(task_widget, text="Delete", command=lambda idx=row: self.delete_task(idx))
             delete_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
     def apply_filters(self, key):

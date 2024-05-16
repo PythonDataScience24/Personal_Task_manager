@@ -278,22 +278,8 @@ def create_tasklist(self):
         ...
 ```
 
-## 6. Fixing 'E1101: Instance of 'TextFileReader' has no 'at' member (no-member)'
-**By adding a .read() after pd.read_csv() so that the argument returns a Dataframe and not a TextFileReader**
 
-```python
-    def create_tasklist(self):
-        """Create a tasklist."""
-        if os.path.exists(self.file_path):
-            self.tasklist = pd.read_csv(self.file_path).read()  # Add .read() here
-            print("File found and loaded into a dataframe.")
-        else:
-            self.tasklist = pd.DataFrame(columns=["Title", "Description", "Deadline", "Category", "Priority", "Status", "Completion Time", "Duration Planned", "Duration", "Points"])
-            self.tasklist.to_csv(self.file_path, index=False)
-            print("File not found. Created a new empty dataframe.")
-```
-
-## 7. Simplify chained arguments
+## 6. Simplify chained arguments
 
 ```python
 # Before
@@ -303,3 +289,4 @@ if i < len(self.tasklist) and i >= 0:
 if 0 <= i < len(self.tasklist):
 ```
 
+ 

@@ -28,34 +28,28 @@ class Manager:
             print("File not found. Created a new empty dataframe.")
 
     def add_task(self, title='', description="", deadline='',
-             category=None, priority=0, status="To Do",
-             completion_time=None, duration_planned=None,
-             duration=None, points=None):
+                 category=None, priority=0, status="To Do",
+                 completion_time=None, duration_planned=None,
+                 duration=None, points=None):
         """Add a task to the tasklist."""
         if status == 'Completed':
             raise ValueError("Cannot add a task with status already 'Completed'.")
 
         self.tasklist.loc[len(self.tasklist)] = [
-            title,
-            description,
-            taskValidator.validateDeadline(deadline),
-            category,
+            title, description,
+            taskValidator.validateDeadline(deadline), category,
             taskValidator.validatePriority(priority),
             taskValidator.validateStatus(status),
-            completion_time,
-            duration_planned,
-            duration,
-            points
+            completion_time, duration_planned, duration, points
         ]
         self.tasklist.to_csv(self.file_path, index=False)
         if status == 'In Progress':
             self.set_inprogress(len(self.tasklist)-1)
 
-    def edit_task(self, i: int, title=None, description=None,
-              deadline=None, category=None, priority=None,
-              status=None, completion_time=None,
-              duration_planned=None, duration=None,
-              points=None):
+    def edit_task(self, i: int, title=None, description=None, deadline=None,
+                  category=None, priority=None, status=None,
+                  completion_time=None, duration_planned=None,
+                  duration=None, points=None):
         """Edit a task in the tasklist."""
         if 0 <= i < len(self.tasklist):
             if title:
@@ -105,7 +99,7 @@ class Manager:
             now = datetime.now()
             formatted_time = now.strftime(
                 "%Y-%m-%d %H:%M"
-            )
+                )
             filename = 'timestamps.json'
             data = []
 
@@ -157,37 +151,44 @@ class Manager:
     def order_by(self, attribute, asc=True):
         """Sort the tasklist by a given attribute."""
         if attribute == 'Title':
-            sorted_by_title_df = self.tasklist.sort_values(by='Title', ascending=asc, key=lambda x: x.str.lower() + x)
-            return sorted_by_title_df
+            sortedbyTitle_df = self.tasklist.sort_values(
+                by='Title', ascending=asc, key=lambda x: x.str.lower() + x
+                )
+            return sortedbyTitle_df
 
         if attribute == 'Deadline':
-            sorted_by_deadline_df = self.tasklist.sort_values(by='Deadline', ascending=asc)
-            return sorted_by_deadline_df
+            sortedbyDeadline_df = self.tasklist.sort_values(
+                by='Deadline', ascending=asc
+                )
+            return sortedbyDeadline_df
 
         if attribute == 'Category':
-            sorted_by_category_df = self.tasklist.sort_values(by='Category', ascending=asc, key=lambda x: x.str.lower())
-            return sorted_by_category_df
+            sortedbyCategory_df = self.tasklist.sort_values(
+                by='Category', ascending=asc, key=lambda x: x.str.lower()
+                )
+            return sortedbyCategory_df
 
         if attribute == 'Priority':
-            sorted_by_priority_df = self.tasklist.sort_values(by='Priority', ascending=asc)
-            return sorted_by_priority_df
+            sortedbyPriority_df = self.tasklist.sort_values(by='Priority', ascending=asc)
+            return sortedbyPriority_df
 
         if attribute == 'Status':
-            sorted_by_status_df = self.tasklist.sort_values(by='Status', ascending=asc)
-            return sorted_by_status_df
+            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=asc)
+            return sortedbyStatus_df
 
         if attribute == 'Duration Planned':
-            sorted_by_duration_planned_df = self.tasklist.sort_values(by='Duration Planned', ascending=asc)
-            return sorted_by_duration_planned_df
+            sortedbyDurationPlanned_df = self.tasklist.sort_values(
+                by='Duration Planned', ascending=asc
+                )
+            return sortedbyDurationPlanned_df
 
         if attribute == 'i':
-            sorted_by_index_df = self.tasklist.sort_index(ascending=asc)
-            return sorted_by_index_df
+            sortedbyIndex_df = self.tasklist.sort_index(ascending=asc)
+            return sortedbyIndex_df
 
         if attribute == 'Points':
-            sorted_by_points_df = self.tasklist.sort_values('Points', ascending=asc)
-            return sorted_by_points_df
-
+            sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
+            return sortedbyPoints_df
 
     def add_category(self, new_category):
         """Add a new category to the tasklist."""
@@ -215,3 +216,4 @@ class Manager:
         """Get upcoming deadlines."""
         tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
         return self.tasklist[self.tasklist['Deadline'] <= tomorrow]
+    

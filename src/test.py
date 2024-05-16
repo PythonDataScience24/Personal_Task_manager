@@ -16,7 +16,7 @@ def testset():
     # possible values
     categories = ["Work", "Home", "Study", "Personal", "Health"]
     priorities = [0,1,2,3,4,5]
-    statuses = ["To Do", "In Progress", "Completed"]
+    statuses = ["To Do", "In Progress"]
     titles = ["A","B","a","b","c","C"]
 
     # 50 Random Inputs
@@ -37,7 +37,7 @@ def testset():
 #create
 manager = Manager()
 manager.create_tasklist()
-# testset()
+testset()
 
 #orderby tests (can also be used to test ValidateTask class)
 # print(manager.order_by('Title'))

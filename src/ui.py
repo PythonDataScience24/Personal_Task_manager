@@ -106,6 +106,10 @@ class TodoApp(tk.Tk):
         self.statistics_section.pack(fill=tk.BOTH, expand=True)
         self.statistics_section.pack_forget()
 
+        #Add Task button
+        add_task_button = tk.Button(top_bar, text= '+', command = self.add_task())
+        add_task_button.pack(side=tk.RIGHT, padx=10, pady=5)
+
         self.load_tasks()
 
     def load_tasks(self, tasks=None):
@@ -124,6 +128,9 @@ class TodoApp(tk.Tk):
         filters = {k: v.get() for k, v in self.filters.items() if v.get() != "Select " + k and v.get() != 'Any'}
         filtered_tasks = self.manager.filter(**filters)
         self.load_tasks(filtered_tasks)
+    
+    def add_task(self):
+        return
     
     def delete_task(self, rowidx):
         self.manager.delete_task(rowidx)

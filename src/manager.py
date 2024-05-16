@@ -32,14 +32,14 @@ class Manager:
     def add_task(self, title='', description="", deadline='',
                 category=None, priority=0, status="To Do",
                 completion_time=None, duration_planned=None,
-                duration=None, points=None):
+                duration=None, points=0):
         """Add a task to the tasklist."""
 
         if not isinstance(self.tasklist, pd.DataFrame):
             # Create an empty tasklist if it's not already initialized
             self.create_tasklist()
 
-        self.tasklist.iloc[len(self.tasklist)] = [
+        self.tasklist.loc[len(self.tasklist)] = [
             title, description,
             taskValidator.validateDeadline(deadline), category,
             taskValidator.validatePriority(priority),

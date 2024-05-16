@@ -37,13 +37,17 @@ class taskValidator:
         return deadline
 
     @staticmethod
-    def validatePriority(x):
-        # Check if x is empty or cannot be converted to an integer
-        if not x.strip() or not x.strip().isdigit():
-            return 0  # Return the default priority value
+    def validatePriority(x):  
+        try:    # Check if x is empty or cannot be converted to an integer
+            if isinstance(x, str):
+                if not x.strip() or not x.strip().isdigit():
+                    return 0  # Return the default priority value
 
-        # Convert x to an integer
-        priority = int(x)
+            # Convert x to an integer
+            priority = int(x)
+
+        except (ValueError, TypeError):
+            priority = x
 
         # Check if priority is within the valid range
         if priority < 0:

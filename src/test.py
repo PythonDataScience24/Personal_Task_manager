@@ -30,9 +30,8 @@ def testset():
         flag = random.choice([True, False])
         num1 = random.randint(1, 5) 
         num2 = random.randint(1, 5)
-        num3 = random.randint(1, 20)
-
-        manager.add_task(task_name, description, due_date, category, priority, status, flag, num1, num2, num3)
+        num3 = 0
+        manager.add_task(task_name, description, due_date, category, priority, status, flag, num1, num2)
 
 #create
 manager = Manager()

@@ -27,15 +27,19 @@ class Manager:
             self.tasklist.to_csv(self.file_path, index=False)
             print("File not found. Created a new empty dataframe.")
 
-    def add_task(self, title='', description="", deadline='',
-                 category=None, priority=0, status="To Do",
-                 completion_time=None, duration_planned=None,
-                 duration=None, points=None):
-        """Add a task to the tasklist."""
-        if status == 'Completed':
-            raise ValueError("Cannot add a task with status already 'Completed'.")
 
-        self.tasklist.loc[len(self.tasklist)] = [
+
+    def add_task(self, title='', description="", deadline='',
+                category=None, priority=0, status="To Do",
+                completion_time=None, duration_planned=None,
+                duration=None, points=None):
+        """Add a task to the tasklist."""
+
+        if not isinstance(self.tasklist, pd.DataFrame):
+            # Create an empty tasklist if it's not already initialized
+            self.create_tasklist()
+
+        self.tasklist.iloc[len(self.tasklist)] = [
             title, description,
             taskValidator.validateDeadline(deadline), category,
             taskValidator.validatePriority(priority),
@@ -46,6 +50,7 @@ class Manager:
         if status == 'In Progress':
             self.set_inprogress(len(self.tasklist)-1)
 
+
     def edit_task(self, i: int, title=None, description=None, deadline=None,
                   category=None, priority=None, status=None,
                   completion_time=None, duration_planned=None,
@@ -53,29 +58,29 @@ class Manager:
         """Edit a task in the tasklist."""
         if 0 <= i < len(self.tasklist):
             if title:
-                self.tasklist.at[i, "Title"] = title
+                self.tasklist.loc[i, "Title"] = title
             if description:
-                self.tasklist.at[i, "Description"] = description
+                self.tasklist.loc[i, "Description"] = description
             if deadline:
-                self.tasklist.at[i, "Deadline"] = taskValidator.validateDeadline(deadline)
+                self.tasklist.loc[i, "Deadline"] = taskValidator.validateDeadline(deadline)
             if category:
-                self.tasklist.at[i, "Category"] = category
+                self.tasklist.loc[i, "Category"] = category
             if priority:
-                self.tasklist.at[i, "Priority"] = taskValidator.validatePriority(priority)
+                self.tasklist.loc[i, "Priority"] = taskValidator.validatePriority(priority)
             if status:
-                self.tasklist.at[i, "Status"] = taskValidator.validateStatus(status)
+                self.tasklist.loc[i, "Status"] = taskValidator.validateStatus(status)
                 if status == 'In Progress':
                     self.set_inprogress(i)
                 if status == 'Completed':
                     self.complete_task(i)
             if completion_time:
-                self.tasklist.at[i, "Completion Time"] = taskValidator.validateDeadline(completion_time)
+                self.tasklist.loc[i, "Completion Time"] = taskValidator.validateDeadline(completion_time)
             if duration_planned:
-                self.tasklist.at[i, "Duration Planned"] = duration_planned
+                self.tasklist.loc[i, "Duration Planned"] = duration_planned
             if duration:
-                self.tasklist.at[i, "Duration"] = duration
+                self.tasklist.loc[i, "Duration"] = duration
             if points:
-                self.tasklist.at[i, "Points"] = points
+                self.tasklist.loc[i, "Points"] = points
             self.tasklist.to_csv(self.file_path, index=False)
         else:
             print("Index out of range.")
@@ -84,7 +89,7 @@ class Manager:
         """Delete a task from the tasklist."""
         if 0 <= i < len(self.tasklist):
             self.tasklist.drop(i, inplace=True)
-            self.tasklist.reset_index(drop=True, inplace=True)
+            self.tasklist = self.tasklist.reset_index(drop=True)
             self.tasklist.to_csv(self.file_path, index=False)
         else:
             print("Index out of range.")
@@ -150,45 +155,25 @@ class Manager:
 
     def order_by(self, attribute, asc=True):
         """Sort the tasklist by a given attribute."""
-        if attribute == 'Title':
-            sortedbyTitle_df = self.tasklist.sort_values(
-                by='Title', ascending=asc, key=lambda x: x.str.lower() + x
-                )
-            return sortedbyTitle_df
+        sort_functions = {
+            'Title': lambda x: x.str.lower() + x,
+            'Deadline': None,
+            'Category': lambda x: x.str.lower(),
+            'Priority': None,
+            'Status': None,
+            'Duration Planned': None,
+            'i': None,
+            'Points': None
+        }
 
-        if attribute == 'Deadline':
-            sortedbyDeadline_df = self.tasklist.sort_values(
-                by='Deadline', ascending=asc
-                )
-            return sortedbyDeadline_df
-
-        if attribute == 'Category':
-            sortedbyCategory_df = self.tasklist.sort_values(
-                by='Category', ascending=asc, key=lambda x: x.str.lower()
-                )
-            return sortedbyCategory_df
-
-        if attribute == 'Priority':
-            sortedbyPriority_df = self.tasklist.sort_values(by='Priority', ascending=asc)
-            return sortedbyPriority_df
-
-        if attribute == 'Status':
-            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=asc)
-            return sortedbyStatus_df
-
-        if attribute == 'Duration Planned':
-            sortedbyDurationPlanned_df = self.tasklist.sort_values(
-                by='Duration Planned', ascending=asc
-                )
-            return sortedbyDurationPlanned_df
-
-        if attribute == 'i':
-            sortedbyIndex_df = self.tasklist.sort_index(ascending=asc)
-            return sortedbyIndex_df
-
-        if attribute == 'Points':
-            sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
-            return sortedbyPoints_df
+        if attribute in sort_functions:
+            sorted_df = self.tasklist.sort_values(
+                by=attribute, ascending=asc, key=sort_functions[attribute]
+            )
+            return sorted_df
+        else:
+            print(f"Invalid attribute: {attribute}")
+            return None
 
     def add_category(self, new_category):
         """Add a new category to the tasklist."""
@@ -207,7 +192,7 @@ class Manager:
                 filtered_tasklist = filtered_tasklist[filtered_tasklist[attribute] == value]
             else:
                 print(f"Invalid attribute: {attribute}")
-        return filtered_tasklist
+                return filtered_tasklist
     
     def get_tasklist(self):
         return self.tasklist

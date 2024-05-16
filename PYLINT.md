@@ -1,9 +1,5 @@
 # Fixing Profile Class with Pylint
 
-## Introduction
-
-In this document, we'll discuss how to improve the quality of the `profile_class.py` file by addressing the issues identified by Pylint.
-
 ---
 
 ## Pylint Output Before Fixing
@@ -36,7 +32,36 @@ profile_class.py:4:0: C0411: standard import "import os" should be placed before
 Your code has been rated at 6.27/10
 ```
 
-## Fixing Trailing Whitespace Issues, Adding docstrings for each method
+## Fixing Trailing Whitespaces, Adding docstrings for each method
+
+Trailing whitespaces were removed and docstrings were added at the beginning of the class and each method.
+
+Example of adding a class and a method Docstring:
+```python
+class Profile:
+    """
+    A class to represent a profile.
+
+    Attributes:
+        name (str): The name of the profile.
+        total_points (int): The total points earned by the profile.
+        completed_tasks (int): The number of completed tasks.
+        todo_tasks (int): The number of tasks to be done.
+        inprogress_tasks (int): The number of tasks in progress.
+        tasklist (DataFrame): DataFrame containing task information.
+    """
+
+    def __init__(self, name='None', total_points=0):
+        """
+        Initialize a profile with a name and total points.
+
+        Args:
+            name (str): The name of the profile. Defaults to 'None'.
+            total_points (int): The total points of the profile. Defaults to 0.
+        """
+```
+
+After applying Docstring to all methods and removing all whitespaced the Pylint output is the following:
 
 ```plaintext
 ************* Module profile_class
@@ -53,7 +78,7 @@ Your code has been rated at 9.14/10 (previous run: 1.60/10, +7.54)
 
 # Fixing manager class with pylint
 
-## Pylint output before fixing 
+## Pylint Output Before Fixing 
 ```plaintext
 ************* Module manager
 manager.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
@@ -154,8 +179,7 @@ Your code has been rated at -2.66/10
 ```
 
 ## 1. Remove Trailing Whitespaces
-
-** Removed trailing whitespace from lines 18, 25, 32, 38, 40, 106, 107, 108, 124, 129, 134, 150, 158, 160, 164, 170, 172, 174 **
+Removed trailing whitespace from lines 18, 25, 32, 38, 40, 106, 107, 108, 124, 129, 134, 150, 158, 160, 164, 170, 172, 174
 
 For example: 
 ```python
@@ -173,7 +197,7 @@ class Manager:
 ```
 
 ## 2. Refactor lines that are too long
-** Refactored lines 25, 29, 33, 40, 52, 60, 66, 80 to fit within the 100-character limit.** 
+Refactored lines 25, 29, 33, 40, 52, 60, 66, 80 to fit within the 100-character limit.
 
 For example:
 ```python
@@ -187,7 +211,7 @@ def edit_task(self, i: int, title=None, description=None, deadline=None, categor
 ```
 
 ## 3. Include missing Docstrings
-** Added module docstring at the beginning of the file.**
+Added module docstring at the beginning of the file.
 
 ```python
 # Before (no change)
@@ -199,7 +223,7 @@ This module defines the Manager class for managing tasks.
 ```
 
 ## 4. Iclude missing Class Docstrings and method Docstrings
-** Added Docstrings at the beginning of the class and of each method** 
+Added Docstrings at the beginning of the class and of each method.
 
 For example: 
 ```python
@@ -213,7 +237,7 @@ def create_tasklist(self):
 ```
 
 ## 5. Refactor methods with too many arguments
-** Refactor the methods add_task and edit_task so that they take in less arguments**
+Refactor the methods add_task and edit_task so that they take in less arguments.
 
 ```python
 # Previous Code
@@ -260,21 +284,6 @@ def create_tasklist(self):
             duration_planned = task.get("duration_planned", None)
             duration = task.get("duration", None)
             points = task.get("points", None)
-
-            self.tasklist.at[i, "Title"] = title if title is not None else self.tasklist.at[i, "Title"]
-            self.tasklist.at[i, "Description"] = description if description is not None else self.tasklist.at[i, "Description"]
-            self.tasklist.at[i, "Deadline"] = taskValidator.validateDeadline(deadline) if deadline is not None else self.tasklist.at[i, "Deadline"]
-            self.tasklist.at[i, "Category"] = category if category is not None else self.tasklist.at[i, "Category"]
-            self.tasklist.at[i, "Priority"] = taskValidator.validatePriority(priority) if priority is not None else self.tasklist.at[i, "Priority"]
-            self.tasklist.at[i, "Status"] = taskValidator.validateStatus(status) if status is not None else self.tasklist.at[i, "Status"]
-            self.tasklist.at[i, "Completion Time"] = taskValidator.validateDeadline(completion_time) if completion_time is not None else self.tasklist.at[i, "Completion Time"]
-            self.tasklist.at[i, "Duration Planned"] = duration_planned if duration_planned is not None else self.tasklist.at[i, "Duration Planned"]
-            self.tasklist.at[i, "Duration"] = duration if duration is not None else self.tasklist.at[i, "Duration"]
-            self.tasklist.at[i, "Points"] = points if points is not None else self.tasklist.at[i, "Points"]
-
-            self.tasklist.to_csv(self.file_path, index=False)
-        else:
-            print("Index out of range.")
         ...
 ```
 
@@ -288,5 +297,108 @@ if i < len(self.tasklist) and i >= 0:
 # After
 if 0 <= i < len(self.tasklist):
 ```
+## 7. Refactoring the order_by method and fixing naming issue
+The order_by method has too many branches. To improve that, a directory can be used to map attribute names to lambda functions for sorting. By doing that the naming style issue (for example: '"sortedbyTitle_df" doesn't conform to snake_case naming style') is automatically also taken care of.
 
- 
+```python
+#Previous Code
+
+    def order_by(self, attribute, asc=True):
+        """Sort the tasklist by a given attribute."""
+        if attribute == 'Title':
+            sortedbyTitle_df = self.tasklist.sort_values(
+                by='Title', ascending=asc, key=lambda x: x.str.lower() + x
+            )
+            return sortedbyTitle_df
+
+        if attribute == 'Deadline':
+            sortedbyDeadline_df = self.tasklist.sort_values(
+                by='Deadline', ascending=asc
+            )
+            return sortedbyDeadline_df
+
+        if attribute == 'Category':
+            sortedbyCategory_df = self.tasklist.sort_values(by='Category', ascending=asc, key=lambda x: x.str.lower())
+            return sortedbyCategory_df
+
+        if attribute == 'Priority':
+            sortedbyPriority_df = self.tasklist.sort_values(by='Priority', ascending=asc)
+            return sortedbyPriority_df
+
+        if attribute == 'Status':
+            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=asc)
+            return sortedbyStatus_df
+
+        if attribute == 'Duration Planned':
+            sortedbyDurationPlanned_df = self.tasklist.sort_values(
+                by='Duration Planned', ascending=asc
+            )
+            return sortedbyDurationPlanned_df
+
+        if attribute == 'i':
+            sortedbyIndex_df = self.tasklist.sort_index(ascending=asc)
+            return sortedbyIndex_df
+
+        if attribute == 'Points':
+            sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
+            return sortedbyPoints_df
+
+#Improved Code
+
+    def order_by(self, attribute, asc=True):
+        """Sort the tasklist by a given attribute."""
+        sort_functions = {
+            'Title': lambda x: x.str.lower() + x,
+            'Deadline': None,
+            'Category': lambda x: x.str.lower(),
+            'Priority': None,
+            'Status': None,
+            'Duration Planned': None,
+            'i': None,
+            'Points': None
+        }
+
+        if attribute in sort_functions:
+            sorted_df = self.tasklist.sort_values(
+                by=attribute, ascending=asc, key=sort_functions[attribute]
+            )
+            return sorted_df
+        else:
+            print(f"Invalid attribute: {attribute}")
+            return None
+```
+
+**With these changes the output of the pylint already improved quite a bit:**
+```plaintext
+************* Module manager
+manager.py:77:0: C0301: Line too long (105/100) (line-too-long)
+manager.py:196:0: C0303: Trailing whitespace (trailing-whitespace)
+manager.py:202:0: C0301: Line too long (104/100) (line-too-long)
+manager.py:32:4: R0913: Too many arguments (11/5) (too-many-arguments)
+manager.py:49:8: E1101: Instance of 'TextFileReader' has no 'to_csv' member (no-member)
+manager.py:54:4: R0913: Too many arguments (12/5) (too-many-arguments)
+manager.py:63:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:65:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:67:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:69:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:71:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:77:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:79:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:81:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:83:16: E1101: Instance of 'TextFileReader' has no 'loc' member (no-member)
+manager.py:84:12: E1101: Instance of 'TextFileReader' has no 'to_csv' member (no-member)
+manager.py:54:4: R0912: Too many branches (14/12) (too-many-branches)
+manager.py:92:28: E1101: Instance of 'TextFileReader' has no 'reset_index' member (no-member)
+manager.py:93:12: E1101: Instance of 'TextFileReader' has no 'to_csv' member (no-member)
+manager.py:101:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+manager.py:136:22: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+manager.py:129:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+manager.py:169:8: R1705: Unnecessary "else" after "return" (no-else-return)
+manager.py:191:28: E1101: Instance of 'TextFileReader' has no 'columns' member (no-member)
+manager.py:187:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+manager.py:197:4: C0116: Missing function or method docstring (missing-function-docstring)
+manager.py:92:12: W0201: Attribute 'tasklist' defined outside __init__ (attribute-defined-outside-init)
+
+------------------------------------------------------------------
+Your code has been rated at 3.03/10 (previous run: 0.94/10, +2.09)
+```

@@ -90,7 +90,7 @@ Specifically for the classes manager and profile_class using the principles od a
 1. **Refactoring `load_tasklist` method:**
    - The `load_tasklist` method now focuses only on loading the tasklist DataFrame from a CSV file. It abstracts the loading process, making the `__init__` method cleaner.
    - **Code (Previous):**
-     ```python
+    ```python
     def __init__(self, name='None', total_points=0):
         """
         Initialize a profile with a name and total points.
@@ -117,7 +117,7 @@ Specifically for the classes manager and profile_class using the principles od a
         self.tasklist['Deadline'] = pd.to_datetime(self.tasklist['Deadline'])
      ```
    - **Code (Improved):**
-     ```python
+    ```python
     def __init__(self, name='None', total_points=0):
         """Initialize a profile with a name and total points."""
         self.name = name

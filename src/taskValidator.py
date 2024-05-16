@@ -38,13 +38,20 @@ class taskValidator:
 
     @staticmethod
     def validatePriority(x):
-        #priority has to be either 0,1,2,3
-        if x < 0:
+        # Check if x is empty or cannot be converted to an integer
+        if not x.strip() or not x.strip().isdigit():
+            return 0  # Return the default priority value
+
+        # Convert x to an integer
+        priority = int(x)
+
+        # Check if priority is within the valid range
+        if priority < 0:
             return 0
-        if x > 3:
+        elif priority > 3:
             return 3
         else:
-            return x
+            return priority
 
     @staticmethod
     def validateStatus(x):

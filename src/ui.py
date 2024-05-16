@@ -1,21 +1,33 @@
 import tkinter as tk
 from manager import Manager
 from profile_class import Profile
+from taskValidator import taskValidator
+from tkinter import messagebox
+from tkcalendar import Calendar
+import datetime as dt
 
 class TaskWidget(tk.Frame):
-    def __init__(self, parent, task, *args, **kwargs):
+    def __init__(self, parent, task, row, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.task = task
         self.task_title = task['Title']
         self.detail_visible = False
         self.config(bg="white", height=50)
+        self.task_status = task['Status']
+        self.idx = row
+        self.color_status = 'light grey'
         self.create_widgets()
         self.pack(fill=tk.X, pady=2)
+        
 
     def create_widgets(self):
         self.task_label = tk.Label(self, text=self.task_title, bg="white")
         self.task_label.pack(fill=tk.X, padx=10, pady=5)
         self.task_label.bind("<Button-1>", self.toggle_details)
+        
+        self.second_label = tk.Label(self, text=self.task_status, bg= self.color_status)
+        self.second_label.pack(fill=tk.X, padx=10, pady=5)
+        self.second_label.bind("<Button-1>", self.change_status)
 
         # Adds color code based on priority
         colors_palette = {
@@ -36,6 +48,22 @@ class TaskWidget(tk.Frame):
         else:
             self.details_frame.pack(fill=tk.X, after=self.task_label)
             self.detail_visible = True
+    
+    def change_status(self, event):
+        if self.task_status == 'To Do':
+            manager.edit_task(self.idx, status='In Progress')
+            self.task_status = 'In Progress'
+            self.color_status = 'yellow'
+        
+        
+        elif self.task_status == 'In Progress':
+            manager.edit_task(self.idx, status='Completed')
+            self.task_status = 'Completed'
+            self.color_status = 'green'
+  
+        self.second_label.config(text=self.task_status, bg=self.color_status)
+        
+
 
 class TodoApp(tk.Tk):
     def __init__(self, manager, profile):
@@ -106,8 +134,8 @@ class TodoApp(tk.Tk):
         self.statistics_section.pack(fill=tk.BOTH, expand=True)
         self.statistics_section.pack_forget()
 
-        #Add Task button
-        add_task_button = tk.Button(top_bar, text= '+', command = self.add_task())
+        # Add Task button
+        add_task_button = tk.Button(top_bar, text='+', command=self.open_add_task_dialog)
         add_task_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
         self.load_tasks()
@@ -117,11 +145,11 @@ class TodoApp(tk.Tk):
             tasks = self.manager.get_tasklist()
         for widget in self.tasks_frame.winfo_children():
             widget.destroy()
-        for _, task in tasks.iterrows():
-            task_widget = TaskWidget(self.tasks_frame, task)
+        for row, task in tasks.iterrows():
+            task_widget = TaskWidget(self.tasks_frame, task, row)
 
             # Add delete button
-            delete_button = tk.Button(task_widget, text="Delete", command=lambda t=_ : self.delete_task(t))
+            delete_button = tk.Button(task_widget, text="Delete", command=lambda idx=row: self.delete_task(idx))
             delete_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
     def apply_filters(self, key):
@@ -129,9 +157,65 @@ class TodoApp(tk.Tk):
         filtered_tasks = self.manager.filter(**filters)
         self.load_tasks(filtered_tasks)
     
-    def add_task(self):
-        return
-    
+    def open_add_task_dialog(self):
+        # Create a new window for adding tasks
+        self.add_task_window = tk.Toplevel(self)
+        self.add_task_window.title("Add Task")
+        self.add_task_window.geometry("400x400")
+
+        # Labels and entry fields for task details
+        tk.Label(self.add_task_window, text="Title:").pack()
+        self.title_entry = tk.Entry(self.add_task_window)
+        self.title_entry.pack()
+
+        tk.Label(self.add_task_window, text="Description:").pack()
+        self.description_entry = tk.Entry(self.add_task_window)
+        self.description_entry.pack()
+
+        tk.Label(self.add_task_window, text="Priority:").pack()
+        self.priority_entry = tk.Entry(self.add_task_window)
+        self.priority_entry.pack()
+
+        self.deadline_calendar = Calendar(self.add_task_window, selectmode='day',
+                                          date_pattern='dd.MM.yyyy',
+                                          year=dt.datetime.now().year, month=dt.datetime.now().month,
+                                          day=dt.datetime.now().day,
+                                          mindate=dt.datetime.now(),  # Restrict scrolling back
+                                          foreground='black')  # Set font color to black
+        self.deadline_calendar.pack()
+
+        # Button to submit the task
+        submit_button = tk.Button(self.add_task_window, text="Add Task", command=self.submit_task)
+        submit_button.pack()
+
+    def submit_task(self):
+        # Get task details from entry fields
+        title = self.title_entry.get()
+        description = self.description_entry.get()
+        priority = self.priority_entry.get()
+        deadline = self.deadline_entry.get()
+
+        # Validate task details
+        if not title or not deadline:
+            messagebox.showerror("Error", "Please fill in both title and deadline fields.")
+            return
+
+        validated_deadline = taskValidator.validateDeadline(deadline)
+        if validated_deadline is None:
+            messagebox.showerror("Error", "Invalid deadline format or deadline cannot be in the past.", icon='error')
+            return
+
+        priority = taskValidator.validatePriority(priority)
+
+        # Add the task using manager
+        self.manager.add_task(title, description, priority, validated_deadline)
+
+        # Close the add task window
+        self.add_task_window.destroy()
+
+        # Reload tasks
+        self.load_tasks()
+
     def delete_task(self, rowidx):
         self.manager.delete_task(rowidx)
         self.load_tasks()

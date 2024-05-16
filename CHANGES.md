@@ -26,15 +26,15 @@ Specifically for the classes manager and profile_class using the principles od a
      ```python
      def create_tasklist(self):
          """Create a tasklist."""
+         self.tasklist = pd.DataFrame(columns=[
+             "Title", "Description", "Deadline", "Category",
+             "Priority", "Status", "Completion Time",
+             "Duration Planned", "Duration", "Points"
+         ])
          if os.path.exists(self.file_path):
              self.tasklist = pd.read_csv(self.file_path)
              print("File found and loaded into a dataframe.")
          else:
-             self.tasklist = pd.DataFrame(columns=[
-                 "Title", "Description", "Deadline", "Category",
-                 "Priority", "Status", "Completion Time",
-                 "Duration Planned", "Duration", "Points"
-             ])
              self.tasklist.to_csv(self.file_path, index=False)
              print("File not found. Created a new empty dataframe.")
      ```

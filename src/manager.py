@@ -16,7 +16,7 @@ class Manager:
     def create_tasklist(self):
         """Create a tasklist."""
         if os.path.exists(self.file_path):
-            self.tasklist = pd.read_csv(self.file_path).read()
+            self.tasklist = pd.read_csv(self.file_path)
             print("File found and loaded into a dataframe.")
         else:
             self.tasklist = pd.DataFrame(columns=[
@@ -88,7 +88,7 @@ class Manager:
 
     def delete_task(self, i: int):
         """Delete a task from the tasklist."""
-        if i < len(self.tasklist) and i >= 0:
+        if 0 <= i < len(self.tasklist):
             self.tasklist.drop(i, inplace=True)
             self.tasklist.reset_index(drop=True, inplace=True)
             self.tasklist.to_csv(self.file_path, index=False)
@@ -101,7 +101,7 @@ class Manager:
 
     def set_inprogress(self, i):
         """Set a task to 'In Progress'."""
-        if i < len(self.tasklist) and i >= 0:
+        if 0 <= i < len(self.tasklist):
             now = datetime.now()
             formatted_time = now.strftime(
                 "%Y-%m-%d %H:%M"
@@ -129,7 +129,7 @@ class Manager:
 
     def complete_task(self, i: int):
         """Complete a task."""
-        if i < len(self.tasklist) and i >= 0:
+        if 0 <= i < len(self.tasklist):
             now = datetime.now()
             formatted_time = now.strftime("%Y-%m-%d %H:%M")
 
@@ -157,42 +157,37 @@ class Manager:
     def order_by(self, attribute, asc=True):
         """Sort the tasklist by a given attribute."""
         if attribute == 'Title':
-            sortedbyTitle_df = self.tasklist.sort_values(
-                by='Title', ascending=asc, key=lambda x: x.str.lower() + x
-            )
-            return sortedbyTitle_df
+            sorted_by_title_df = self.tasklist.sort_values(by='Title', ascending=asc, key=lambda x: x.str.lower() + x)
+            return sorted_by_title_df
 
         if attribute == 'Deadline':
-            sortedbyDeadline_df = self.tasklist.sort_values(
-                by='Deadline', ascending=asc
-            )
-            return sortedbyDeadline_df
+            sorted_by_deadline_df = self.tasklist.sort_values(by='Deadline', ascending=asc)
+            return sorted_by_deadline_df
 
         if attribute == 'Category':
-            sortedbyCategory_df = self.tasklist.sort_values(by='Category', ascending=asc, key=lambda x: x.str.lower())
-            return sortedbyCategory_df
+            sorted_by_category_df = self.tasklist.sort_values(by='Category', ascending=asc, key=lambda x: x.str.lower())
+            return sorted_by_category_df
 
         if attribute == 'Priority':
-            sortedbyPriority_df = self.tasklist.sort_values(by='Priority', ascending=asc)
-            return sortedbyPriority_df
+            sorted_by_priority_df = self.tasklist.sort_values(by='Priority', ascending=asc)
+            return sorted_by_priority_df
 
         if attribute == 'Status':
-            sortedbyStatus_df = self.tasklist.sort_values(by='Status', ascending=asc)
-            return sortedbyStatus_df
+            sorted_by_status_df = self.tasklist.sort_values(by='Status', ascending=asc)
+            return sorted_by_status_df
 
         if attribute == 'Duration Planned':
-            sortedbyDurationPlanned_df = self.tasklist.sort_values(
-                by='Duration Planned', ascending=asc
-            )
-            return sortedbyDurationPlanned_df
+            sorted_by_duration_planned_df = self.tasklist.sort_values(by='Duration Planned', ascending=asc)
+            return sorted_by_duration_planned_df
 
         if attribute == 'i':
-            sortedbyIndex_df = self.tasklist.sort_index(ascending=asc)
-            return sortedbyIndex_df
+            sorted_by_index_df = self.tasklist.sort_index(ascending=asc)
+            return sorted_by_index_df
 
         if attribute == 'Points':
-            sortedbyPoints_df = self.tasklist.sort_values('Points', ascending=asc)
-            return sortedbyPoints_df
+            sorted_by_points_df = self.tasklist.sort_values('Points', ascending=asc)
+            return sorted_by_points_df
+
 
     def add_category(self, new_category):
         """Add a new category to the tasklist."""

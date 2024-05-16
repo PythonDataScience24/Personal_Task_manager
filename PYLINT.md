@@ -295,3 +295,11 @@ def create_tasklist(self):
 
 ## 7. Simplify chained arguments
 
+```python
+# Before
+if i < len(self.tasklist) and i >= 0:
+
+# After
+if 0 <= i < len(self.tasklist):
+```
+

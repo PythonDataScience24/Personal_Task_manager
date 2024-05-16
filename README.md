@@ -15,3 +15,13 @@ As we just started this project there is not much here. You can see the mileston
 You can find our timeplan in the [roadmap](https://github.com/PythonDataScience24/Personal_Task_manager/blob/main/roadmap.md)!
 ## How can you help?
 Because its a rather small and short project and we just started you can contact us via E-Mail if you want to help: briac.ledermann@students.unibe.ch
+
+## SETUP
+To set up this project, simply clone the repo into your local folder. 
+
+Make sure that [Tkinter](https://docs.python.org/3/library/tkinter.html), [Pandas](https://pandas.pydata.org/) and [matplotlib](https://matplotlib.org/) are installed.
+
+To run the program, you have to run the ui.py file in the 'src' folder. 
+
+Since we are still in pre-alpha phase, there will already be some tasks stored for testing purposes.
+

@@ -46,7 +46,7 @@ Because its a rather small and short project, you can contact us via E-Mail if y
 ```
 - Create various data visualizations (track completed tasks daily
   or weekly, monitor missed deadlines, possibly categorized)
-- Prioritize user experience with filters, sorting, and other
+- Prioritize user experience with filters and other
   interactive features
 - Ensure the app functions by the deadline
 ```

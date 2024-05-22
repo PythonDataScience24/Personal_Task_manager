@@ -114,6 +114,7 @@ class Manager:
                         data = json.load(file)
                         print("json file loaded")
                     except json.JSONDecodeError:
+                        print("Data could not be loaded")
                         data = []
 
             data.append({
@@ -186,6 +187,7 @@ class Manager:
 
     def filter(self, **kwargs):
         """Filter the tasklist based on given criteria."""
+        print("gets called")
         filtered_tasklist = self.tasklist.copy()
         for attribute, value in kwargs.items():
             if attribute in self.tasklist.columns:

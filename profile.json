@@ -1,9 +1,9 @@
 [
     {
         "name": "None",
-        "total_points": 6,
-        "completed_tasks": 1,
+        "total_points": 39,
+        "completed_tasks": 2,
         "todo_tasks": 23,
-        "ongoing_tasks": 26
+        "ongoing_tasks": 25
     }
 ]

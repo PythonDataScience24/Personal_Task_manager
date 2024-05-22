@@ -44,6 +44,22 @@ class TestTaskValidator(unittest.TestCase):
     def test_validateDeadline_invalid_format_wrong_order(self):
         invalid_format = "08/05/2024"  # Month/Day/Year
         self.assertIsNone(taskValidator.validateDeadline(invalid_format))
+    
+    def test_validatePriority_invalide_string(self):
+        invalide_string = 'Hi i am Invalid'
+        self.assertEqual(taskValidator.validatePriority(invalide_string), 0)
+
+    def test_validatePriority_valid_string(self):
+        valid_string = '3'
+        self.assertEqual(taskValidator.validatePriority(valid_string), 3)
+
+    def test_validatePriority_valid_string_to_high(self):
+        valid_string_tohigh = '100'
+        self.assertEqual(taskValidator.validatePriority(valid_string_tohigh), 3)
+
+    def test_validatePriority_valid_string_to_low(self):
+        valid_string_tohigh = '-100'
+        self.assertEqual(taskValidator.validatePriority(valid_string_tohigh), 0)
 
     def test_validatePriority_negative_priority(self):
         self.assertEqual(taskValidator.validatePriority(-1), 0)

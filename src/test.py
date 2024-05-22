@@ -2,6 +2,7 @@ from manager import Manager
 import random
 from datetime import datetime, timedelta
 import pandas as pd
+from visualizer import Visualizer
 
 """
 This is just to play around.
@@ -45,8 +46,11 @@ def testset():
 
 #create
 manager = Manager()
-manager.create_tasklist()
-testset()
+df = manager.get_tasklist()
+#Visualizer.tasks_by_priority(df)
+#Visualizer.tasks_by_Category(df)
+Visualizer.upcoming_deadlines(df)
+
 
 #orderby tests (can also be used to test ValidateTask class)
 # print(manager.order_by('Title'))

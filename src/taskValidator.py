@@ -1,6 +1,7 @@
 import datetime as dt
 
 class taskValidator:
+    
     @staticmethod
     def validateDeadline(x):
         """
@@ -12,29 +13,30 @@ class taskValidator:
         Returns:
             datetime.datetime or None: The validated deadline as a datetime object if it is in the future, 
             otherwise returns None.
-            """
+        """
+        print(x)
+        if not isinstance(x, str):
+            x = str(x)  # Convert to string if it's not already
+
+        # Handle invalid "0" string early
+        if x == "0":
+            print("Invalid deadline: '0' string")
+            return None
+
+        # Update the date pattern based on the actual format returned by the Calendar widget
         try:
-            deadline = dt.datetime.strptime(x, "%d.%m.%Y")
+            deadline = dt.datetime.strptime(x, "%d.%m.%Y")  # Update the date pattern to match the format
+            
         except ValueError:
-            try:
-                deadline = dt.datetime.strptime(x, "%d.%m.%y")
-            except ValueError:
-                try:
-                    deadline = dt.datetime.strptime(x, "%d.%m")
-                    current_year = dt.datetime.now().year
-                    if deadline.day < dt.datetime.now().day:
-                        deadline = deadline.replace(year=current_year + 1)
-                    else:
-                        deadline = deadline.replace(year=current_year)
-                except ValueError:
-                    print("Invalid deadline format")
-                    return None
-        
+            print("Invalid deadline format")
+            return None
+
         if deadline < dt.datetime.now():
             print("Deadline cannot be in the past")
             return None
-        
-        return deadline
+
+        return deadline.date()
+
 
     @staticmethod
     def validatePriority(x):  
@@ -68,4 +70,4 @@ class taskValidator:
             print("Status is not valid.")
             return None
    
-   
+    

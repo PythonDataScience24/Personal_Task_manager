@@ -1,5 +1,5 @@
 Exceptions:
-Exceptions should either be handled by giving Error Message or by handling it in a task specific way. We decided to handle exception by handling them immeaditly. As all of our try-except block are mainly here to catch errors in inputs (Missing file, wrong format, invalid input/wrong typed input). So our exception Handling is either to create a valid input or to just execute the method because the try method is actually checks for not valid inputs and the thrown exception is actually a valid input.
+Exceptions should either be handled by giving Error Message or by handling it in a task specific way. We decided to handle exception by handling them immediately. As all of our try-except block are mainly here to catch errors in inputs (Missing file, wrong format, invalid input/wrong typed input). So our exception Handling is either to create a valid input or to just execute the method because the try method is actually checks for not valid inputs and the thrown exception is actually a valid input.
 
 taskValidator:
 

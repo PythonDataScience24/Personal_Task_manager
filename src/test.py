@@ -3,6 +3,16 @@ import random
 from datetime import datetime, timedelta
 import pandas as pd
 
+"""
+This is just to play around.
+Actual tests are in the tests folder.
+
+"""
+
+
+
+
+
 def random_date():
     #generate date in next 2 years
     start_date = datetime.now()

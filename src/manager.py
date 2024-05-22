@@ -44,7 +44,8 @@ class Manager:
             taskValidator.validateDeadline(deadline), category,
             taskValidator.validatePriority(priority),
             taskValidator.validateStatus(status),
-            completion_time, duration_planned, duration, points
+            completion_time, duration_planned, 
+            duration, points
         ]
         self.tasklist.to_csv(self.file_path, index=False)
         if status == 'In Progress':
@@ -114,7 +115,6 @@ class Manager:
                         data = json.load(file)
                         print("json file loaded")
                     except json.JSONDecodeError:
-                        print("Data could not be loaded")
                         data = []
 
             data.append({
@@ -187,7 +187,6 @@ class Manager:
 
     def filter(self, **kwargs):
         """Filter the tasklist based on given criteria."""
-        print("gets called")
         filtered_tasklist = self.tasklist.copy()
         for attribute, value in kwargs.items():
             if attribute in self.tasklist.columns:

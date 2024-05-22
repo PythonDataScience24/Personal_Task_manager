@@ -1,6 +1,6 @@
 #  TASKTASK
 ## What are we doing?
-The project TaskTask got created as part of the course *"Programming for data sciences"* at the university of Bern. This project aims to create a taskmanager with all the functionality you would expect. Categories, deadlines, taskfilters, task sorting, visualization of completed and ongoing tasks.\
+The project TaskTask got created as part of the course *"Programming for data sciences"* at the university of Bern. This project aims to create a taskmanager with all the functionality you would expect. Categories, deadlines, taskfilters,  visualization of completed and ongoing tasks.\
 
 Our goal is to provide an extensive and intuitive way to organise your daily Tasks. Through visualization of task statistic the user also gains valuable insights into his habits. It also provides an interesting feedback which can work as a basis for change or optimisation of your daily taskplanning.
 

@@ -10,6 +10,7 @@ As we just started this project there is not much here. You can see the mileston
 1. [Tkinter](https://docs.python.org/3/library/tkinter.html) for GUI
 2. [Pandas](https://pandas.pydata.org/) for DataFrame/.csv storage
 3. [matplotlib](https://matplotlib.org/) for data visualization
+4. [Tkcalendar](https://pypi.org/project/tkcalendar/) for a visual calendar
 
 ## What's our plan?
 You can find our timeplan in the [roadmap](https://github.com/PythonDataScience24/Personal_Task_manager/blob/main/roadmap.md)!
@@ -19,7 +20,7 @@ Because its a rather small and short project and we just started you can contact
 ## SETUP
 To set up this project, simply clone the repo into your local folder. 
 
-Make sure that [Tkinter](https://docs.python.org/3/library/tkinter.html), [Pandas](https://pandas.pydata.org/) and [matplotlib](https://matplotlib.org/) are installed.
+Make sure that everything from the requirements.txt file is downloaded.
 
 To run the program, you have to run the ui.py file in the 'src' folder. 
 

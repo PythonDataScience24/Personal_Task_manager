@@ -27,6 +27,7 @@ class TaskWidget(tk.Frame):
 
         #add colors to the status label
         colors_palette_status ={
+            'To Do' : 'red',
             'In Progress' : 'yellow',
             'Completed' : 'green'
         }

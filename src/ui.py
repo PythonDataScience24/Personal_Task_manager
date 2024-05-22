@@ -167,7 +167,7 @@ class TodoApp(tk.Tk):
     
     def open_add_task_dialog(self):
         # Create a new window for adding tasks
-        self.add_task_window = tk.Toplevel(self)
+        self.add_task_window = tk.Toplevel(self.master)
         self.add_task_window.title("Add Task")
         self.add_task_window.geometry("400x400")
 
@@ -180,48 +180,83 @@ class TodoApp(tk.Tk):
         self.description_entry = tk.Entry(self.add_task_window)
         self.description_entry.pack()
 
-        tk.Label(self.add_task_window, text="Priority:").pack()
-        self.priority_entry = tk.Entry(self.add_task_window)
-        self.priority_entry.pack()
+        # Priority label and dropdown menu in the same line
+        priority_frame = tk.Frame(self.add_task_window)
+        priority_frame.pack()
+        tk.Label(priority_frame, text="Priority:").pack(side='left')
+        # Dropdown menu for priority selection
+        self.priority_var = tk.StringVar(self.add_task_window)
+        self.priority_var.set("0")  # Default value
+        priority_options = ["0", "1", "2", "3"]
+        self.priority_menu = tk.OptionMenu(priority_frame, self.priority_var, *priority_options)
+        self.priority_menu.pack(side='left')
+        
+        # Category label and dropdown menu in the same line
+        category_frame = tk.Frame(self.add_task_window)
+        category_frame.pack()
+        tk.Label(category_frame, text="Category:").pack(side='left')
+        self.category_var = tk.StringVar(self.add_task_window)
+        predefined_categories = ["Home", "Work", "Study", "Personal", "Health"]
+        self.category_menu = tk.OptionMenu(category_frame, self.category_var, *predefined_categories)
+        self.category_menu.pack(side='left')
+
+        # Deadline section
+        tk.Label(self.add_task_window, text="Deadline:").pack()
+
+        tomorrow = dt.date.today() + dt.timedelta(days=1)  # Add 1 day to get tomorrow's date
 
         self.deadline_calendar = Calendar(self.add_task_window, selectmode='day',
-                                          date_pattern='dd.MM.yyyy',
-                                          year=dt.datetime.now().year, month=dt.datetime.now().month,
-                                          day=dt.datetime.now().day,
-                                          mindate=dt.datetime.now(),  # Restrict scrolling back
-                                          foreground='black')  # Set font color to black
+                                        date_pattern='dd.mm.yyyy',
+                                        year=tomorrow.year, month=tomorrow.month,
+                                        day=tomorrow.day,
+                                        mindate=tomorrow,  # Set mindate to tomorrow
+                                        foreground='black')  # Set font color to black
         self.deadline_calendar.pack()
+        
+        # Planned duration section
+        duration_frame = tk.Frame(self.add_task_window)
+        duration_frame.pack()
+        tk.Label(duration_frame, text="Planned Duration:").pack()
+
+        hours_frame = tk.Frame(self.add_task_window)
+        hours_frame.pack()
+        tk.Label(hours_frame, text="Hours:").pack(side='left')
+        self.hours_entry = tk.Spinbox(hours_frame, from_=0, to=23, width=5)
+        self.hours_entry.pack(side='left')
 
         # Button to submit the task
         submit_button = tk.Button(self.add_task_window, text="Add Task", command=self.submit_task)
         submit_button.pack()
 
+
     def submit_task(self):
-        # Get task details from entry fields
+                # Get task details from entry fields
         title = self.title_entry.get()
         description = self.description_entry.get()
-        priority = self.priority_entry.get()
-        deadline = self.deadline_entry.get()
+        priority = self.priority_var.get()
+        category = self.category_var.get()
+        deadline = self.deadline_calendar.get_date()
+        planned_duration = self.hours_entry.get()
+        
+        planned_duration = float(planned_duration)
+        formatted_duration = f"{planned_duration:.1f}"  # Format to one decimal place
 
         # Validate task details
         if not title or not deadline:
             messagebox.showerror("Error", "Please fill in both title and deadline fields.")
             return
 
-        validated_deadline = taskValidator.validateDeadline(deadline)
-        if validated_deadline is None:
-            messagebox.showerror("Error", "Invalid deadline format or deadline cannot be in the past.", icon='error')
-            return
-
-        priority = taskValidator.validatePriority(priority)
-
         # Add the task using manager
-        self.manager.add_task(title, description, priority, validated_deadline)
-
-        # Close the add task window
+        self.manager.add_task(
+            title=title,
+            description=description,
+            deadline=deadline,
+            category=category,
+            priority=priority,
+            duration_planned=formatted_duration 
+        )
+         # Close the add task window after successful addition
         self.add_task_window.destroy()
-
-        # Reload tasks
         self.load_tasks()
 
     def delete_task(self, rowidx):
@@ -243,6 +278,8 @@ class TodoApp(tk.Tk):
             self.profile_info_label.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
         else:
             self.profile_info_label.pack_forget()
+            
+
 
 if __name__ == "__main__":
     manager = Manager()

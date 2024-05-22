@@ -188,12 +188,19 @@ class Manager:
     def filter(self, **kwargs):
         """Filter the tasklist based on given criteria."""
         filtered_tasklist = self.tasklist.copy()
+
+        # Convert priority to integer for comparison
+        if 'Priority' in kwargs:
+            kwargs['Priority'] = int(kwargs['Priority'])
+
+        # Try to filter with all criteria first
         for attribute, value in kwargs.items():
             if attribute in self.tasklist.columns:
                 filtered_tasklist = filtered_tasklist[filtered_tasklist[attribute] == value]
             else:
                 print(f"Invalid attribute: {attribute}")
-                return filtered_tasklist
+
+        return filtered_tasklist
     
     def get_tasklist(self):
         return self.tasklist

@@ -1,6 +1,7 @@
 import tkinter as tk
 from manager import Manager
 from profile_class import Profile
+from visualizer import Visualizer
 from taskValidator import taskValidator
 from tkinter import messagebox
 from tkcalendar import Calendar
@@ -272,6 +273,22 @@ class TodoApp(tk.Tk):
         self.tasks_section.pack_forget()
         self.statistics_section.pack(fill=tk.BOTH, expand=True)
 
+        for widget in self.statistics_section.winfo_children():
+            widget.destroy()
+
+        tk.Button(self.statistics_section, text="Tasks by Priority", command=self.visualize_tasks_by_priority).pack(pady=5)
+        tk.Button(self.statistics_section, text="Tasks by Category", command=self.visualize_tasks_by_category).pack(pady=5)
+        tk.Button(self.statistics_section, text="Upcoming Deadlines", command=self.visualize_upcoming_deadlines).pack(pady=5)
+
+    def visualize_tasks_by_priority(self):
+        Visualizer.tasks_by_priority(self.manager.get_tasklist())
+
+    def visualize_tasks_by_category(self):
+        Visualizer.tasks_by_category(self.manager.get_tasklist())
+
+    def visualize_upcoming_deadlines(self):
+        Visualizer.upcoming_deadlines(self.manager.get_tasklist())
+
     def show_profile(self):
         if not self.profile_info_label.winfo_ismapped():
             profile_info = f"Username: {self.profile.name}\nScore: {self.profile.total_points}"
@@ -279,7 +296,6 @@ class TodoApp(tk.Tk):
             self.profile_info_label.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
         else:
             self.profile_info_label.pack_forget()
-            
 
 
 if __name__ == "__main__":

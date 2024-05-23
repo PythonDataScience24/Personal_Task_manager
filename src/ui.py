@@ -6,6 +6,7 @@ from taskValidator import taskValidator
 from tkinter import messagebox
 from tkcalendar import Calendar
 import datetime as dt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class TaskWidget(tk.Frame):
     def __init__(self, parent, task, row, *args, **kwargs):
@@ -269,6 +270,7 @@ class TodoApp(tk.Tk):
         self.tasks_section.pack(fill=tk.BOTH, expand=True)
         self.statistics_section.pack_forget()
 
+
     def show_statistics(self):
         self.tasks_section.pack_forget()
         self.statistics_section.pack(fill=tk.BOTH, expand=True)
@@ -276,18 +278,16 @@ class TodoApp(tk.Tk):
         for widget in self.statistics_section.winfo_children():
             widget.destroy()
 
-        tk.Button(self.statistics_section, text="Tasks by Priority", command=self.visualize_tasks_by_priority).pack(pady=5)
-        tk.Button(self.statistics_section, text="Tasks by Category", command=self.visualize_tasks_by_category).pack(pady=5)
-        tk.Button(self.statistics_section, text="Upcoming Deadlines", command=self.visualize_upcoming_deadlines).pack(pady=5)
+        tk.Button(self.statistics_section, text="Tasks Statistics", command=self.visualize_category_tasks_statistics).pack(pady=5)
+        tk.Button(self.statistics_section, text="Times and Points Statistics", command=self.visualize_points_statistics).pack(pady=5)
 
-    def visualize_tasks_by_priority(self):
-        Visualizer.tasks_by_priority(self.manager.get_tasklist())
+    def visualize_category_tasks_statistics(self):
+        Visualizer.tasks_by_priority_and_category_pie(self.manager.get_tasklist())
+        Visualizer.tasks_by_priority_and_category(self.manager.get_tasklist())
 
-    def visualize_tasks_by_category(self):
-        Visualizer.tasks_by_category(self.manager.get_tasklist())
-
-    def visualize_upcoming_deadlines(self):
+    def visualize_points_statistics(self):
         Visualizer.upcoming_deadlines(self.manager.get_tasklist())
+        Visualizer.points_over_time(self.manager.get_tasklist())
 
     def show_profile(self):
         if not self.profile_info_label.winfo_ismapped():

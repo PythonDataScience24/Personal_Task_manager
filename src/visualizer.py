@@ -2,11 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import matplotlib.dates as mdates
+from IPython.display import display
+import plotly.graph_objects as go
+import plotly.io as pio
 
 class Visualizer:
 
     @staticmethod
-    def tasks_by_priority(df):
+    def tasks_by_priority_and_category_pie(df):
         colors_palette_priority = {
             0: 'lightgrey',
             1: 'green',
@@ -14,20 +17,6 @@ class Visualizer:
             3: 'red'
         }
 
-        priority_counts = df['Priority'].value_counts().sort_index()
-        colors = [colors_palette_priority[priority] for priority in priority_counts.index]
-
-        plt.figure(figsize=(10, 6))
-        bars = plt.bar(priority_counts.index, priority_counts.values, color=colors)
-        plt.title('Number of Tasks by Priority')
-        plt.xlabel('Priority')
-        plt.ylabel('Number of Tasks')
-        plt.xticks(priority_counts.index, labels=[f'Priority {i}' for i in priority_counts.index], rotation=0)
-        plt.grid(axis='y')
-        plt.show()
-
-    @staticmethod
-    def tasks_by_category(df):
         colors_palette_category = {
             'Study': 'limegreen',
             'Home': 'forestgreen',
@@ -36,21 +25,59 @@ class Visualizer:
             'Work': 'darkolivegreen'
         }
 
+        priority_counts = df['Priority'].value_counts().sort_index()
         category_counts = df['Category'].value_counts().sort_index()
-        colors = [colors_palette_category[category] for category in category_counts.index]
 
-        plt.figure(figsize=(10, 6))
-        bars = plt.bar(category_counts.index, category_counts.values, color=colors)
-        plt.title('Number of Tasks by Category')
-        plt.xlabel('Category')
-        plt.ylabel('Number of Tasks')
-        plt.xticks(rotation=0)
-        plt.grid(axis='y')
+        colors_priority = [colors_palette_priority[priority] for priority in priority_counts.index]
+        colors_category = [colors_palette_category[category] for category in category_counts.index]
+
+        fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+        axs[0].pie(priority_counts.values, labels=priority_counts.index, colors=colors_priority, autopct='%1.1f%%')
+        axs[0].set_title('Number of Tasks by Priority')
+
+        axs[1].pie(category_counts.values, labels=category_counts.index, colors=colors_category, autopct='%1.1f%%')
+        axs[1].set_title('Number of Tasks by Category')
+
+        plt.tight_layout()
         plt.show()
 
     @staticmethod
-    def upcoming_deadlines(df):
+    def tasks_by_priority_and_category(df):
+        colors_palette_priority = {
+            0: 'lightgrey',
+            1: 'green',
+            2: 'yellow',
+            3: 'red'
+        }
 
+        colors_palette_category = {
+            'Study': 'limegreen',
+            'Home': 'forestgreen',
+            'Health': 'lightgreen',
+            'Personal': 'darkgreen',
+            'Work': 'darkolivegreen'
+        }
+
+        priority_category_counts = df.groupby(['Priority', 'Category']).size().unstack().fillna(0)
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+        for i, priority in enumerate(priority_category_counts.index):
+            ax.bar(priority_category_counts.columns, priority_category_counts.loc[priority],
+                   bottom=priority_category_counts.iloc[:i].sum(), label=f'Priority {priority}',
+                   color=colors_palette_priority[priority])
+
+        ax.set_title('Number of Tasks by Priority and Category')
+        ax.set_xlabel('Category')
+        ax.set_ylabel('Number of Tasks')
+        ax.legend(title='Priority', loc='upper right')
+        plt.tight_layout()
+        plt.grid(True)
+        plt.show()
+
+
+    @staticmethod
+    def upcoming_deadlines(df):
         df['Deadline'] = pd.to_datetime(df['Deadline'])
 
         deadline_counts = df['Deadline'].value_counts().sort_index()
@@ -61,25 +88,108 @@ class Visualizer:
         # Omitting 0 values
         full_counts = full_counts[full_counts != 0]
 
-        plt.figure(figsize=(12, 6))
+        # Create the plotly figure
+        fig = go.Figure()
 
-        # Using a simple line plot
-        plt.plot(full_counts.index, full_counts.values, marker='o')
-        plt.title('Upcoming Deadlines')
-        plt.xlabel('Date')
-        plt.ylabel('Number of Deadlines')
-        plt.xticks(rotation=45)
-        plt.yticks(range(int(full_counts.min()), int(full_counts.max()) + 1))
-        plt.grid(True)
-        plt.tight_layout()
+        # Add the deadlines line
+        fig.add_trace(go.Scatter(
+            x=full_counts.index, y=full_counts.values,
+            mode='lines+markers+text',
+            name='Deadlines',
+            line=dict(color='royalblue', width=2),
+            marker=dict(size=6),
+            text=[", ".join(df[df['Deadline'] == date]['Title'].values) for date in full_counts.index],
+            textposition="top center",
+            hoverinfo='text'
+        ))
 
-        # Labeling each value with the task title
-        for date, count in zip(full_counts.index, full_counts.values):
-            task_titles = df[df['Deadline'] == date]['Title'].values
-            for i, title in enumerate(task_titles):
-                if i % 2 == 0:
-                    plt.text(date, count, title, ha='center', va='bottom')
-                else:
-                    plt.text(date, count, title, ha='center', va='top')
+        # Customize the layout
+        fig.update_layout(
+            title='Upcoming Deadlines',
+            xaxis_title='Date',
+            yaxis_title='Number of Deadlines',
+            template='plotly_white',
+            xaxis=dict(
+                tickformat='%Y-%m-%d',
+                tickangle=-45,
+                rangeslider=dict(visible=True),
+            ),
+            yaxis=dict(gridcolor='lightgrey'),
+            legend=dict(x=0.01, y=0.99, bordercolor='Black', borderwidth=1)
+        )
 
-        plt.show()
+        # Show the plot in local window
+        fig.show()
+        
+
+    @staticmethod
+    def points_over_time(df):
+        df['Deadline'] = pd.to_datetime(df['Deadline'])
+        
+        points_over_time = df.groupby('Deadline')['Points'].sum().sort_index().cumsum().reset_index()
+
+        # Calculate the moving average
+        points_over_time['Moving Average'] = points_over_time['Points'].rolling(window=7).mean()
+
+        # Create the plot
+        fig = go.Figure()
+
+        # Add the cumulative points line
+        fig.add_trace(go.Scatter(
+            x=points_over_time['Deadline'], y=points_over_time['Points'],
+            mode='lines+markers', name='Cumulative Points',
+            line=dict(color='royalblue', width=2),
+            marker=dict(size=6)
+        ))
+
+        # Add the moving average line
+        fig.add_trace(go.Scatter(
+            x=points_over_time['Deadline'], y=points_over_time['Moving Average'],
+            mode='lines', name='7-Day Moving Average',
+            line=dict(color='firebrick', width=2, dash='dash')
+        ))
+
+        # Add annotations for key points
+        max_point = points_over_time['Points'].idxmax()
+        fig.add_annotation(x=points_over_time['Deadline'][max_point], y=points_over_time['Points'][max_point],
+                        text=f"Max: {points_over_time['Points'][max_point]}",
+                        showarrow=True, arrowhead=1)
+
+        # Customize the layout
+        fig.update_layout(
+            title='Cumulative Points Over Time',
+            xaxis_title='Date',
+            yaxis_title='Cumulative Points',
+            template='plotly_white',
+            xaxis=dict(
+                tickformat='%Y-%m-%d',
+                tickangle=-45,
+                rangeslider=dict(visible=True),
+            ),
+            yaxis=dict(gridcolor='lightgrey'),
+            legend=dict(x=0.01, y=0.99, bordercolor='Black', borderwidth=1)
+        )
+
+        # Show the plot
+        fig.show()
+
+
+
+
+
+
+
+# #show all the plots
+# #load in the tasklist
+# tasklist = pd.read_csv('tasklist.csv')
+# Visualizer.tasks_by_priority(tasklist)
+# Visualizer.tasks_by_category(tasklist)
+# Visualizer.upcoming_deadlines(tasklist)
+# Visualizer.points_over_time(tasklist)
+# Visualizer.tasks_by_priority_and_category(tasklist)
+
+
+
+
+
+

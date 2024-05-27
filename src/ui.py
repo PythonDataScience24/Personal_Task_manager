@@ -7,6 +7,7 @@ from tkinter import messagebox
 from tkcalendar import Calendar
 import datetime as dt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from tkinter import ttk
 
 class TaskWidget(tk.Frame):
     def __init__(self, parent, task, row, *args, **kwargs):
@@ -21,26 +22,25 @@ class TaskWidget(tk.Frame):
         self.create_widgets()
         self.pack(fill=tk.X, pady=2)
         
-
     def create_widgets(self):
         self.task_label = tk.Label(self, text=self.task_title, bg="white")
         self.task_label.pack(fill=tk.X, padx=10, pady=5)
         self.task_label.bind("<Button-1>", self.toggle_details)
 
-        #add colors to the status label
-        colors_palette_status ={
-            'To Do' : 'red',
-            'In Progress' : 'yellow',
-            'Completed' : 'green'
+        # Add colors to the status label
+        colors_palette_status = {
+            'To Do': 'red',
+            'In Progress': 'yellow',
+            'Completed': 'green'
         }
 
         self.color_status = colors_palette_status.get(self.task_status, 'light grey')
         
-        self.status_label = tk.Label(self, text=self.task_status, bg= self.color_status)
+        self.status_label = tk.Label(self, text=self.task_status, bg=self.color_status)
         self.status_label.pack(fill=tk.X, padx=10, pady=5)
         self.status_label.bind("<Button-1>", self.change_status)
 
-        # Adds color code based on priority
+        # Add color code based on priority
         colors_palette_priority = {
             1: 'green',
             2: 'yellow',
@@ -65,16 +65,12 @@ class TaskWidget(tk.Frame):
             manager.edit_task(self.idx, status='In Progress')
             self.task_status = 'In Progress'
             self.color_status = 'yellow'
-        
-        
         elif self.task_status == 'In Progress':
             manager.edit_task(self.idx, status='Completed')
             self.task_status = 'Completed'
             self.color_status = 'green'
   
         self.status_label.config(text=self.task_status, bg=self.color_status)
-        
-
 
 class TodoApp(tk.Tk):
     def __init__(self, manager, profile):
@@ -82,8 +78,9 @@ class TodoApp(tk.Tk):
         self.manager = manager
         self.profile = profile
         self.title("TaskTask")
-        self.geometry("600x500")
+        self.geometry("800x500")
         self.resizable(True, True)
+        self.profile_panel = None
         self.create_widgets()
 
     def create_widgets(self):
@@ -100,9 +97,6 @@ class TodoApp(tk.Tk):
         profile_button = tk.Button(top_bar, text="Profile", command=self.show_profile)
         profile_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
-        # Profile information
-        self.profile_info_label = tk.Label(self, text="", justify="left")
-
         # Filter bar section
         filter_bar = tk.Frame(self, bg="grey", height=50)
         filter_bar.pack(fill=tk.X)
@@ -110,15 +104,15 @@ class TodoApp(tk.Tk):
         # Setup for filters
         self.filters = {"Priority": tk.StringVar(), "Category": tk.StringVar(), "Status": tk.StringVar()}
 
-        #options for the different filters
+        # Options for the different filters
         priority_options = {"Any", '0', '1', '2', '3'}
-        category_options = {"Any","Work", "Home", "Study", "Personal", "Health"} #need maybe an dynamic creation
+        category_options = {"Any", "Work", "Home", "Study", "Personal", "Health"}
         status_options = {"Any", "To Do", "In Progress", "Completed"}
 
         options_map = {
-            "Priority" : priority_options,
-            "Category" : category_options,
-            "Status" : status_options
+            "Priority": priority_options,
+            "Category": category_options,
+            "Status": status_options
         }
 
         for f, var in self.filters.items():
@@ -167,7 +161,7 @@ class TodoApp(tk.Tk):
         filters = {k: v.get() for k, v in self.filters.items() if v.get() != "Select " + k and v.get() != 'Any'}
         filtered_tasks = self.manager.filter(**filters)
         self.load_tasks(filtered_tasks)
-    
+
     def open_add_task_dialog(self):
         # Create a new window for adding tasks
         self.add_task_window = tk.Toplevel(self.master)
@@ -231,9 +225,8 @@ class TodoApp(tk.Tk):
         submit_button = tk.Button(self.add_task_window, text="Add Task", command=self.submit_task)
         submit_button.pack()
 
-
     def submit_task(self):
-                # Get task details from entry fields
+        # Get task details from entry fields
         title = self.title_entry.get()
         description = self.description_entry.get()
         priority = self.priority_var.get()
@@ -270,7 +263,6 @@ class TodoApp(tk.Tk):
         self.tasks_section.pack(fill=tk.BOTH, expand=True)
         self.statistics_section.pack_forget()
 
-
     def show_statistics(self):
         self.tasks_section.pack_forget()
         self.statistics_section.pack(fill=tk.BOTH, expand=True)
@@ -303,17 +295,60 @@ class TodoApp(tk.Tk):
         frame2.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         Visualizer.points_over_time(self.manager.get_tasklist(), frame2)
 
-    def show_profile(self):
-        if not self.profile_info_label.winfo_ismapped():
-            profile_info = f"Username: {self.profile.name}\nScore: {self.profile.total_points}"
-            self.profile_info_label.config(text=profile_info)
-            self.profile_info_label.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
-        else:
-            self.profile_info_label.pack_forget()
+    def create_profile_panel(self):
+        self.profile_panel = tk.Frame(self, bg="lightgrey", width=250, padx=10, pady=10)
+        self.profile_panel.pack(side=tk.BOTTOM, fill=tk.X)
 
+        close_button = tk.Button(self.profile_panel, text="✕", command=self.close_profile_panel, bg="white", fg="black", bd=0, font=("Arial", 12))
+        close_button.pack(anchor=tk.NE)
+
+        profile_info = f"Name: {self.profile.name}\nTotal Points: {self.profile.total_points}"
+        tk.Label(self.profile_panel, text="Profile", font=("Arial", 14, "bold"), bg="lightgrey").pack(anchor=tk.NW, pady=(0, 10))
+        ttk.Separator(self.profile_panel, orient='horizontal').pack(fill='x', pady=(0, 10))
+
+        tk.Label(self.profile_panel, text=profile_info, justify="left", bg="lightgrey").pack(anchor=tk.NW)
+
+        # Icons representing tasks
+        tasks_frame = tk.Frame(self.profile_panel, bg="lightgrey")
+        tasks_frame.pack(pady=(10, 0))
+
+        completed_icon = tk.Label(tasks_frame, text="✓", font=("Arial", 12), bg="lightgrey")
+        completed_icon.grid(row=0, column=0, padx=(10, 5))
+
+        completed_label = tk.Label(tasks_frame, text=f"Completed: {self.profile.completed_tasks}", bg="lightgrey")
+        completed_label.grid(row=0, column=1)
+
+        todo_icon = tk.Label(tasks_frame, text="⚑", font=("Arial", 12), bg="lightgrey")
+        todo_icon.grid(row=1, column=0, padx=(10, 5))
+
+        todo_label = tk.Label(tasks_frame, text=f"To Do: {self.profile.todo_tasks}", bg="lightgrey")
+        todo_label.grid(row=1, column=1)
+
+        inprogress_icon = tk.Label(tasks_frame, text="➔", font=("Arial", 12), bg="lightgrey")
+        inprogress_icon.grid(row=2, column=0, padx=(10, 5))
+
+        inprogress_label = tk.Label(tasks_frame, text=f"In Progress: {self.profile.inprogress_tasks}", bg="lightgrey")
+        inprogress_label.grid(row=2, column=1)
+
+
+
+    def show_profile(self):
+        if self.profile_panel and self.profile_panel.winfo_ismapped():
+            self.profile_panel.pack_forget()
+        else:
+            if not self.profile_panel:
+                self.create_profile_panel()
+            else:
+                self.profile_panel.pack(side=tk.BOTTOM, fill=tk.X)
+
+    def close_profile_panel(self):
+        if self.profile_panel is not None:
+            self.profile_panel.pack_forget()
 
 if __name__ == "__main__":
     manager = Manager()
     profile = Profile()
     app = TodoApp(manager=manager, profile=profile)
     app.mainloop()
+
+

@@ -72,7 +72,7 @@ class Profile:
             'total_points': self.total_points,
             'completed_tasks': self.completed_tasks,
             'todo_tasks': self.todo_tasks,
-            'ongoing_tasks': self.inprogress_tasks
+            'inprogress_tasks': self.inprogress_tasks
         }
     
     def save_to_json(self, filename='profile.json'):

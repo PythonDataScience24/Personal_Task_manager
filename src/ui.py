@@ -282,12 +282,26 @@ class TodoApp(tk.Tk):
         tk.Button(self.statistics_section, text="Times and Points Statistics", command=self.visualize_points_statistics).pack(pady=5)
 
     def visualize_category_tasks_statistics(self):
-        Visualizer.tasks_by_priority_and_category_pie(self.manager.get_tasklist())
-        Visualizer.tasks_by_priority_and_category(self.manager.get_tasklist())
+        for widget in self.statistics_section.winfo_children():
+            widget.destroy()
+        frame1 = tk.Frame(self.statistics_section)
+        frame1.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        Visualizer.tasks_by_priority_and_category_pie(self.manager.get_tasklist(), frame1)
+        
+        frame2 = tk.Frame(self.statistics_section)
+        frame2.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        Visualizer.tasks_by_priority_and_category(self.manager.get_tasklist(), frame2)
 
     def visualize_points_statistics(self):
-        Visualizer.upcoming_deadlines(self.manager.get_tasklist())
-        Visualizer.points_over_time(self.manager.get_tasklist())
+        for widget in self.statistics_section.winfo_children():
+            widget.destroy()
+        frame1 = tk.Frame(self.statistics_section)
+        frame1.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        Visualizer.upcoming_deadlines(self.manager.get_tasklist(), frame1)
+        
+        frame2 = tk.Frame(self.statistics_section)
+        frame2.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        Visualizer.points_over_time(self.manager.get_tasklist(), frame2)
 
     def show_profile(self):
         if not self.profile_info_label.winfo_ismapped():
@@ -301,5 +315,5 @@ class TodoApp(tk.Tk):
 if __name__ == "__main__":
     manager = Manager()
     profile = Profile()
-    app = TodoApp(manager, profile)
+    app = TodoApp(manager=manager, profile=profile)
     app.mainloop()

@@ -1,15 +1,16 @@
 import pandas as pd
+import tkinter as tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-import plotly.express as px
-import matplotlib.dates as mdates
-from IPython.display import display
 import plotly.graph_objects as go
 import plotly.io as pio
+from PIL import Image, ImageTk
+import io
 
 class Visualizer:
 
     @staticmethod
-    def tasks_by_priority_and_category_pie(df):
+    def tasks_by_priority_and_category_pie(df, master):
         colors_palette_priority = {
             0: 'lightgrey',
             1: 'green',
@@ -40,10 +41,14 @@ class Visualizer:
         axs[1].set_title('Number of Tasks by Category')
 
         plt.tight_layout()
-        plt.show()
+
+        # Embed the plot in Tkinter
+        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
 
     @staticmethod
-    def tasks_by_priority_and_category(df):
+    def tasks_by_priority_and_category(df, master):
         colors_palette_priority = {
             0: 'lightgrey',
             1: 'green',
@@ -73,11 +78,15 @@ class Visualizer:
         ax.legend(title='Priority', loc='upper right')
         plt.tight_layout()
         plt.grid(True)
-        plt.show()
+        plt.close()
 
+        # Embed the plot in Tkinter
+        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas.draw()
+        canvas.get_tk_widget().pack()
 
     @staticmethod
-    def upcoming_deadlines(df):
+    def upcoming_deadlines(df, master):
         df['Deadline'] = pd.to_datetime(df['Deadline'])
 
         deadline_counts = df['Deadline'].value_counts().sort_index()
@@ -118,12 +127,16 @@ class Visualizer:
             legend=dict(x=0.01, y=0.99, bordercolor='Black', borderwidth=1)
         )
 
-        # Show the plot in local window
-        fig.show()
-        
+        # Convert the plotly figure to an image and embed it in Tkinter
+        image_bytes = pio.to_image(fig, format="png")
+        image = Image.open(io.BytesIO(image_bytes))
+        photo = ImageTk.PhotoImage(image)
+        label = tk.Label(master, image=photo)
+        label.image = photo
+        label.pack()
 
     @staticmethod
-    def points_over_time(df):
+    def points_over_time(df, master):
         df['Deadline'] = pd.to_datetime(df['Deadline'])
         
         points_over_time = df.groupby('Deadline')['Points'].sum().sort_index().cumsum().reset_index()
@@ -170,26 +183,10 @@ class Visualizer:
             legend=dict(x=0.01, y=0.99, bordercolor='Black', borderwidth=1)
         )
 
-        # Show the plot
-        fig.show()
-
-
-
-
-
-
-
-# #show all the plots
-# #load in the tasklist
-# tasklist = pd.read_csv('tasklist.csv')
-# Visualizer.tasks_by_priority(tasklist)
-# Visualizer.tasks_by_category(tasklist)
-# Visualizer.upcoming_deadlines(tasklist)
-# Visualizer.points_over_time(tasklist)
-# Visualizer.tasks_by_priority_and_category(tasklist)
-
-
-
-
-
-
+        # Convert the plotly figure to an image and embed it in Tkinter
+        image_bytes = pio.to_image(fig, format="png")
+        image = Image.open(io.BytesIO(image_bytes))
+        photo = ImageTk.PhotoImage(image)
+        label = tk.Label(master, image=photo)
+        label.image = photo
+        label.pack()

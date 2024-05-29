@@ -15,7 +15,7 @@ class TaskWidget(tk.Frame):
         self.task = task
         self.task_title = task['Title']
         self.detail_visible = False
-        self.config(bg="white", height=50)
+        self.config(bg="white", height=50, bd=1, relief=tk.RAISED)
         self.task_status = task['Status']
         self.idx = row
         self.color_status = 'light grey'
@@ -49,8 +49,15 @@ class TaskWidget(tk.Frame):
         priority_color = colors_palette_priority.get(self.task['Priority'], 'light grey')
 
         self.details_frame = tk.Frame(self, bg="light grey", height=50)
-        self.details_label = tk.Label(self.details_frame, text=f"{self.task['Description']} - {self.task['Priority']} - {self.task['Deadline']}", bg=priority_color)
-        self.details_label.pack(padx=10, pady=5)
+        self.details_label = tk.Label(self.details_frame, text=f"Description: {self.task['Description']}", bg=priority_color)
+        self.details_label.pack(padx=10, pady=5, fill="x")
+
+        self.details_label = tk.Label(self.details_frame, text=f"Priority: {self.task['Priority']}", bg=priority_color)
+        self.details_label.pack(padx=10, pady=5, fill="x")
+
+        self.details_label = tk.Label(self.details_frame, text=f"Deadline: {self.task['Deadline']}", bg=priority_color)
+        self.details_label.pack(padx=10, pady=5, fill="x")
+
 
     def toggle_details(self, event):
         if self.detail_visible:
@@ -84,21 +91,31 @@ class TodoApp(tk.Tk):
         self.create_widgets()
 
     def create_widgets(self):
-        top_bar = tk.Frame(self, bg="blue", height=50)
+        top_bar = tk.Frame(self, bg="royalblue", height=70, pady=10)
         top_bar.pack(fill=tk.X)
+        
+        button_font = ("Arial", 16, "bold")
+        button_hover_bg = "skyblue" 
 
-        tasks_btn = tk.Button(top_bar, text="Tasks", command=self.show_tasks)
-        tasks_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=5)
+        tasks_btn = tk.Button(top_bar, text="Tasks", command=self.show_tasks, font=button_font)
+        tasks_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=20)
+        tasks_btn.bind("<Enter>", lambda e: tasks_btn.configure(bg=button_hover_bg))
+        tasks_btn.bind("<Leave>", lambda e: tasks_btn.configure(bg="royalblue"))
 
-        statistics_btn = tk.Button(top_bar, text="Statistics", command=self.show_statistics)
-        statistics_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=5)
+        statistics_btn = tk.Button(top_bar, text="Statistics", command=self.show_statistics, font=button_font)
+        statistics_btn.pack(side=tk.LEFT, fill=tk.BOTH, padx=20)
+        statistics_btn.bind("<Enter>", lambda e: statistics_btn.configure(bg=button_hover_bg))
+        statistics_btn.bind("<Leave>", lambda e: statistics_btn.configure(bg="royalblue"))
 
         # Profile button
-        profile_button = tk.Button(top_bar, text="Profile", command=self.show_profile)
-        profile_button.pack(side=tk.RIGHT, padx=10, pady=5)
+        profile_button = tk.Button(top_bar, text="Profile", command=self.show_profile, font=button_font)
+        profile_button.pack(side=tk.RIGHT, padx=20)
+        profile_button.bind("<Enter>", lambda e: profile_button.configure(bg=button_hover_bg))
+        profile_button.bind("<Leave>", lambda e: profile_button.configure(bg="royalblue"))
+
 
         # Filter bar section
-        filter_bar = tk.Frame(self, bg="grey", height=50)
+        filter_bar = tk.Frame(self, bg="lightgray", height=50)
         filter_bar.pack(fill=tk.X)
 
         # Setup for filters
@@ -140,7 +157,7 @@ class TodoApp(tk.Tk):
         self.statistics_section.pack_forget()
 
         # Add Task button
-        add_task_button = tk.Button(top_bar, text='+', command=self.open_add_task_dialog)
+        add_task_button = tk.Button(top_bar, text="+", command=self.open_add_task_dialog, font=("Arial", 18, "bold"), bg="green")
         add_task_button.pack(side=tk.RIGHT, padx=10, pady=5)
 
         self.load_tasks()
@@ -262,6 +279,7 @@ class TodoApp(tk.Tk):
     def show_tasks(self):
         self.tasks_section.pack(fill=tk.BOTH, expand=True)
         self.statistics_section.pack_forget()
+        self.load_tasks()
 
     def show_statistics(self):
         self.tasks_section.pack_forget()

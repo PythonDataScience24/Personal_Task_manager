@@ -289,7 +289,9 @@ class TodoApp(tk.Tk):
             widget.destroy()
 
         tk.Button(self.statistics_section, text="Tasks Statistics", command=self.visualize_category_tasks_statistics).pack(pady=5)
-        tk.Button(self.statistics_section, text="Times and Points Statistics", command=self.visualize_points_statistics).pack(pady=5)
+        #TODO
+        #tk.Button(self.statistics_section, text="Times and Points Statistics", command=self.visualize_points_statistics).pack(pady=5)
+
 
     def visualize_category_tasks_statistics(self):
         for widget in self.statistics_section.winfo_children():
